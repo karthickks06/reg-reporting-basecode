@@ -115,13 +115,11 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
               hasFunctionalSpec={Boolean(derived.currentWorkflow?.functional_spec_artifact_id)}
               baMode={state.baMode}
               baUserContext={state.baUserContext}
-              baModel={state.baModel}
               gapRows={state.gapRows}
               gapDiagnostics={state.gapDiagnostics}
               remediationStatuses={state.remediationStatuses}
               remediationArtifactIds={state.remediationArtifactIds}
               remediationUserContext={state.remediationUserContext}
-              modelOptionsList={CHAT_MODEL_OPTIONS}
               fcaArtifactId={state.fcaArtifactId}
               modelArtifactId={state.modelArtifactId}
               compareBaselineId={state.compareBaselineId}
@@ -133,7 +131,6 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
               pendingForMe={Boolean(derived.currentWorkflow?.pending_for_me)}
               setBaMode={state.setBaMode}
               setBaUserContext={state.setBaUserContext}
-              setBaModel={state.setBaModel}
               setRemediationStatuses={state.setRemediationStatuses}
               setRemediationArtifactIds={state.setRemediationArtifactIds}
               setRemediationUserContext={state.setRemediationUserContext}
@@ -166,8 +163,6 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
               sqlRunId={state.sqlRunId}
               xmlRunId={state.xmlRunId || derived.currentWorkflow?.latest_xml_run_id || null}
               devUserContext={state.devUserContext}
-              devModel={state.devModel}
-              modelOptionsList={CHAT_MODEL_OPTIONS}
               modelArtifactId={state.modelArtifactId}
               dataArtifactId={state.dataArtifactId}
               xsdArtifactId={state.xsdArtifactId}
@@ -184,7 +179,6 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
               devDataFile={state.devDataFile}
               readOnly={isReadOnly}
               setDevUserContext={state.setDevUserContext}
-              setDevModel={state.setDevModel}
               setModelArtifactId={state.setModelArtifactId}
               setDataArtifactId={state.setDataArtifactId}
               setXsdArtifactId={state.setXsdArtifactId}
@@ -202,8 +196,6 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
               xmlRunId={state.xmlRunId}
               xmlValidation={state.xmlValidation}
               revUserContext={state.revUserContext}
-              revModel={state.revModel}
-              modelOptionsList={CHAT_MODEL_OPTIONS}
               reportXmlArtifactId={state.reportXmlArtifactId}
               xsdArtifactId={state.xsdArtifactId}
               fcaArtifactId={state.fcaArtifactId}
@@ -221,7 +213,6 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
               functionalSpecName={derived.functionalSpecName}
               revXsdFile={state.revXsdFile}
               setRevUserContext={state.setRevUserContext}
-              setRevModel={state.setRevModel}
               setReportXmlArtifactId={state.setReportXmlArtifactId}
               setXsdArtifactId={state.setXsdArtifactId}
               setFcaArtifactId={state.setFcaArtifactId}

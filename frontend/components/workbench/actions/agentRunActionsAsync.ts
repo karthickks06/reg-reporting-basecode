@@ -24,7 +24,6 @@ export function createAgentRunActionsAsync(args: UseWorkbenchActionsArgs, deps: 
           project_id: args.projectId,
           fca_artifact_id: Number(args.fcaArtifactId),
           data_model_artifact_id: Number(args.modelArtifactId),
-          model: args.baModel || undefined,
           allow_fallback: true,
           user_context: args.baUserContext || undefined,
           workflow_id: workflowId || undefined,
@@ -73,7 +72,6 @@ export function createAgentRunActionsAsync(args: UseWorkbenchActionsArgs, deps: 
           project_id: args.projectId,
           base_gap_run_id: args.gapRunId,
           workflow_id: workflowId || undefined,
-          model: args.baModel || undefined,
           allow_fallback: true,
           user_context: args.remediationUserContext || undefined,
           include_statuses: args.remediationStatuses,
@@ -150,7 +148,6 @@ export function createAgentRunActionsAsync(args: UseWorkbenchActionsArgs, deps: 
           project_id: args.projectId,
           gap_run_id: args.gapRunId,
           data_model_artifact_id: Number(args.modelArtifactId),
-          model: args.devModel || undefined,
           user_context: args.devUserContext || undefined,
           workflow_id: workflowId || undefined,
           actor: "DEV"
@@ -229,7 +226,6 @@ export function createAgentRunActionsAsync(args: UseWorkbenchActionsArgs, deps: 
           data_artifact_id: Number(args.dataArtifactId),
           data_model_artifact_id: Number(args.modelArtifactId),
           functional_spec_artifact_id: args.currentWorkflow?.functional_spec_artifact_id || undefined,
-          model: args.revModel || undefined,
           user_context: args.revUserContext || undefined,
           workflow_id: workflowId || undefined,
           compact: true,
@@ -276,7 +272,6 @@ export function createAgentRunActionsAsync(args: UseWorkbenchActionsArgs, deps: 
           xsd_artifact_id: Number(args.xsdArtifactId),
           fca_artifact_id: Number(args.fcaArtifactId),
           functional_spec_artifact_id: args.currentWorkflow.functional_spec_artifact_id,
-          model: args.devModel || undefined,
           user_context: args.devUserContext || undefined,
           workflow_id: workflowId || undefined
         })

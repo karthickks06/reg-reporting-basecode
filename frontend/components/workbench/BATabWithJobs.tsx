@@ -17,13 +17,11 @@ type BATabWithJobsProps = {
   hasFunctionalSpec: boolean;
   baMode: BAAnalysisMode;
   baUserContext: string;
-  baModel: string;
   gapRows: GapRow[];
   gapDiagnostics: GapDiagnostics | null;
   remediationStatuses: string[];
   remediationArtifactIds: number[];
   remediationUserContext: string;
-  modelOptionsList: Array<{ value: string; label: string }>;
   fcaArtifactId: number | "";
   modelArtifactId: number | "";
   compareBaselineId: number | "";
@@ -34,7 +32,6 @@ type BATabWithJobsProps = {
   baFcaFile: File | null;
   setBaMode: (mode: BAAnalysisMode) => void;
   setBaUserContext: (value: string) => void;
-  setBaModel: (value: string) => void;
   setRemediationStatuses: (value: string[]) => void;
   setRemediationArtifactIds: (value: number[]) => void;
   setRemediationUserContext: (value: string) => void;

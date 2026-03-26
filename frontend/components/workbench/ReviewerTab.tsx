@@ -11,8 +11,6 @@ type ReviewerTabProps = {
   xmlRunId: number | null;
   xmlValidation: XmlValidationState | null;
   revUserContext: string;
-  revModel: string;
-  modelOptionsList: Array<{ value: string; label: string }>;
   reportXmlArtifactId: number | "";
   xsdArtifactId: number | "";
   fcaArtifactId: number | "";
@@ -30,7 +28,6 @@ type ReviewerTabProps = {
   functionalSpecName?: string;
   revXsdFile: File | null;
   setRevUserContext: (value: string) => void;
-  setRevModel: (value: string) => void;
   setReportXmlArtifactId: (value: number | "") => void;
   setXsdArtifactId: (value: number | "") => void;
   setFcaArtifactId: (value: number | "") => void;
@@ -49,8 +46,6 @@ export function ReviewerTab({
   xmlRunId,
   xmlValidation,
   revUserContext,
-  revModel,
-  modelOptionsList,
   reportXmlArtifactId,
   xsdArtifactId,
   fcaArtifactId,
@@ -68,7 +63,6 @@ export function ReviewerTab({
   functionalSpecName,
   revXsdFile,
   setRevUserContext,
-  setRevModel,
   setReportXmlArtifactId,
   setXsdArtifactId,
   setFcaArtifactId,
@@ -232,14 +226,8 @@ export function ReviewerTab({
           </details>
           <div className="form-grid form-grid-two">
             <div className="field">
-              <label>Reviewer model</label>
-              <select value={revModel} onChange={(e) => setRevModel(e.target.value)} disabled={busy || readOnly}>
-                {modelOptionsList.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
-                  </option>
-                ))}
-              </select>
+              <label>LLM Model</label>
+              <div className="stat">GPT-4.1 (Azure OpenAI)</div>
             </div>
             <div className="field context-field">
               <label>Reviewer guidance</label>

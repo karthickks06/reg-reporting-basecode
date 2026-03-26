@@ -20,8 +20,6 @@ type DeveloperTabProps = {
   sqlRunId: number | null;
   xmlRunId?: number | null;
   devUserContext: string;
-  devModel: string;
-  modelOptionsList: Array<{ value: string; label: string }>;
   modelArtifactId: number | "";
   dataArtifactId: number | "";
   xsdArtifactId: number | "";
@@ -38,7 +36,6 @@ type DeveloperTabProps = {
   devDataFile: File | null;
   readOnly?: boolean;
   setDevUserContext: (value: string) => void;
-  setDevModel: (value: string) => void;
   setModelArtifactId: (value: number | "") => void;
   setDataArtifactId: (value: number | "") => void;
   setXsdArtifactId: (value: number | "") => void;
@@ -59,8 +56,6 @@ export function DeveloperTab({
   sqlRunId,
   xmlRunId = null,
   devUserContext,
-  devModel,
-  modelOptionsList,
   modelArtifactId,
   dataArtifactId,
   xsdArtifactId,
@@ -77,7 +72,6 @@ export function DeveloperTab({
   devDataFile,
   readOnly = false,
   setDevUserContext,
-  setDevModel,
   setModelArtifactId,
   setDataArtifactId,
   setXsdArtifactId,
@@ -217,14 +211,8 @@ export function DeveloperTab({
           <div className="step-title">Step 2 - Generate SQL</div>
           <div className="form-grid form-grid-two">
             <div className="field">
-              <label>Developer model</label>
-              <select value={devModel} onChange={(e) => setDevModel(e.target.value)} disabled={formBusy}>
-                {modelOptionsList.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
-                  </option>
-                ))}
-              </select>
+              <label>LLM Model</label>
+              <div className="stat">GPT-4.1 (Azure OpenAI)</div>
             </div>
             <div className="field context-field">
               <label>Developer guidance</label>

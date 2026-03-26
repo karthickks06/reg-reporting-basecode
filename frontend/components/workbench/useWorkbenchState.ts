@@ -63,17 +63,14 @@ export function useWorkbenchState() {
   const [remediationArtifactIds, setRemediationArtifactIds] = useState<number[]>([]);
   const [remediationUserContext, setRemediationUserContext] = useState("");
   const [baUserContext, setBaUserContext] = useState("");
-  const [baModel, setBaModel] = useState("gpt-5.1-codex-mini");
   const [sqlRunId, setSqlRunId] = useState<number | null>(null);
   const [sqlScript, setSqlScript] = useState("");
   const [devUserContext, setDevUserContext] = useState("");
-  const [devModel, setDevModel] = useState("gpt-5.1-codex-mini");
   const [reportXmlLinked, setReportXmlLinked] = useState(false);
   const [reportXmlPreview, setReportXmlPreview] = useState("");
   const [xmlRunId, setXmlRunId] = useState<number | null>(null);
   const [xmlValidation, setXmlValidation] = useState<XmlValidationState | null>(null);
   const [revUserContext, setRevUserContext] = useState("");
-  const [revModel, setRevModel] = useState("gpt-5.1-codex-mini");
 
   const [chatInput, setChatInput] = useState("");
   const [chatIncludeAll, setChatIncludeAll] = useState(true);
@@ -200,16 +197,12 @@ export function useWorkbenchState() {
     setRemediationUserContext,
     baUserContext,
     setBaUserContext,
-    baModel,
-    setBaModel,
     sqlRunId,
     setSqlRunId,
     sqlScript,
     setSqlScript,
     devUserContext,
     setDevUserContext,
-    devModel,
-    setDevModel,
     reportXmlLinked,
     setReportXmlLinked,
     reportXmlPreview,
@@ -220,8 +213,6 @@ export function useWorkbenchState() {
     setXmlValidation,
     revUserContext,
     setRevUserContext,
-    revModel,
-    setRevModel,
     chatInput,
     setChatInput,
     chatIncludeAll,

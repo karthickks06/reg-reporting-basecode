@@ -1,88 +1,98 @@
 import logging
 from typing import Any
 
-import httpx
+from openai import AsyncAzureOpenAI
 
 from app.config import settings
 
 
 logger = logging.getLogger("app.llm_client")
 
-MODEL_ALIASES: dict[str, str] = {
-    "gpt-5.1-mini": "gpt-5.1-codex-mini",
-}
 
-def resolve_gateway_model(model: str | None) -> str:
-    """Normalize local model labels into the canonical ids expected by the gateway."""
-    raw = str(model or "").strip()
-    if not raw:
-        return str(settings.axet_llm_model or "gpt-5-mini").strip()
-    # Gateway expects canonical model ids without provider suffixes.
-    # Examples:
-    # - gpt-4.1-mini:ntt -> gpt-4.1-mini
-    # - eu.anthropic...:aws-anthropic -> eu.anthropic...
-    if raw.endswith(":ntt"):
-        return raw[: -len(":ntt")]
-    if raw.endswith(":aws-anthropic"):
-        return raw[: -len(":aws-anthropic")]
-    if raw.endswith(":0:aws-anthropic"):
-        return raw[: -len(":0:aws-anthropic")]
-    return MODEL_ALIASES.get(raw, raw)
+async def call_azure_openai_chat(messages: list[dict[str, str]], request_id: str) -> dict[str, Any]:
+    """Send a chat-completions request to Azure OpenAI and return raw JSON."""
+    logger.info(
+        "Azure OpenAI request start request_id=%s deployment=%s endpoint=%s messages=%d",
+        request_id,
+        settings.azure_openai_deployment,
+        settings.azure_openai_endpoint,
+        len(messages or []),
+    )
+    
+    if settings.llm_log_payload:
+        preview = str({"messages": messages})
+        logger.info(
+            "Azure OpenAI payload request_id=%s payload_preview=%s",
+            request_id,
+            preview[: settings.llm_log_max_chars],
+        )
+    
+    try:
+        client = AsyncAzureOpenAI(
+            api_key=settings.azure_openai_api_key,
+            api_version=settings.azure_openai_api_version,
+            azure_endpoint=settings.azure_openai_endpoint,
+        )
+        
+        response = await client.chat.completions.create(
+            model=settings.azure_openai_deployment,
+            messages=messages,
+            temperature=0.7,
+            max_tokens=4096,
+        )
+        
+        logger.info(
+            "Azure OpenAI response received request_id=%s model=%s usage=%s",
+            request_id,
+            response.model,
+            response.usage.model_dump() if response.usage else None,
+        )
+        
+        # Convert to same format as Axet gateway response
+        data = {
+            "id": response.id,
+            "object": response.object,
+            "created": response.created,
+            "model": response.model,
+            "choices": [
+                {
+                    "index": choice.index,
+                    "message": {
+                        "role": choice.message.role,
+                        "content": choice.message.content,
+                    },
+                    "finish_reason": choice.finish_reason,
+                }
+                for choice in response.choices
+            ],
+            "usage": response.usage.model_dump() if response.usage else None,
+        }
+        
+        if settings.llm_log_payload:
+            out_preview = str(data)
+            logger.info(
+                "Azure OpenAI response parsed request_id=%s response_preview=%s",
+                request_id,
+                out_preview[: settings.llm_log_max_chars],
+            )
+        
+        return data
+        
+    except Exception as exc:
+        logger.exception("Azure OpenAI error request_id=%s error=%s", request_id, str(exc))
+        raise
 
 
 async def call_axet_chat(messages: list[dict[str, str]], request_id: str, model: str | None = None) -> dict[str, Any]:
-    """Send a chat-completions request to the configured gateway and return raw JSON."""
-    chosen_model = resolve_gateway_model(model or settings.axet_llm_model)
-    payload = {
-        "requestId": request_id,
-        "model": chosen_model,
-        "messages": messages,
-    }
-    timeout = httpx.Timeout(timeout=240.0, connect=20.0, read=240.0, write=60.0)
-    if settings.llm_log_payload:
-        preview = str(payload)
-        logger.info(
-            "LLM request start request_id=%s model=%s url=%s payload_preview=%s",
-            request_id,
-            chosen_model,
-            settings.axet_llm_url,
-            preview[: settings.llm_log_max_chars],
-        )
-    else:
-        logger.info(
-            "LLM request start request_id=%s model=%s url=%s messages=%d",
-            request_id,
-            chosen_model,
-            settings.axet_llm_url,
-            len(messages or []),
-        )
-
-    async with httpx.AsyncClient(timeout=timeout, verify=settings.axet_llm_verify_ssl) as client:
-        try:
-            response = await client.post(settings.axet_llm_url, json=payload)
-            logger.info(
-                "LLM response received request_id=%s status=%s",
-                request_id,
-                response.status_code,
-            )
-            if response.status_code >= 400:
-                body_preview = (response.text or "")[: settings.llm_log_max_chars]
-                logger.error(
-                    "LLM request failed request_id=%s status=%s body_preview=%s",
-                    request_id,
-                    response.status_code,
-                    body_preview,
-                )
-            response.raise_for_status()
-            data = response.json()
-            if settings.llm_log_payload:
-                out_preview = str(data)
-                logger.info(
-                    "LLM response parsed request_id=%s response_preview=%s",
-                    request_id,
-                    out_preview[: settings.llm_log_max_chars],
-                )
-            return data
-        except httpx.HTTPError as exc:
-            logger.exception("LLM transport error request_id=%s error=%s", request_id, str(exc))
-            raise
+    """
+    Send a chat-completions request to Azure OpenAI GPT-4.1.
+    
+    This function is the main entry point for all LLM calls in the application.
+    The 'model' parameter is ignored - all calls use the configured Azure OpenAI deployment.
+    """
+    if not settings.azure_openai_endpoint or not settings.azure_openai_api_key:
+        logger.error("Azure OpenAI not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY in .env")
+        raise ValueError("Azure OpenAI credentials not configured. Check AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY environment variables.")
+    
+    logger.info("Using Azure OpenAI GPT-4.1 for request_id=%s", request_id)
+    return await call_azure_openai_chat(messages, request_id)

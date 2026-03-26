@@ -11,9 +11,12 @@ class Settings(BaseSettings):
     auto_create_schema: bool = True
     startup_probe_timeout_seconds: float = 3.0
 
-    axet_llm_url: str = "https://axet.nttdata.com/flows/cloud/hackthon-be/v1/chat/completions"
-    axet_llm_model: str = "gpt-5-mini"
-    axet_llm_verify_ssl: bool = True
+    # Azure OpenAI Configuration (Required)
+    azure_openai_endpoint: str = ""
+    azure_openai_api_key: str = ""
+    azure_openai_deployment: str = "gpt-4.1"
+    azure_openai_api_version: str = "2024-12-01-preview"
+    
     llm_log_payload: bool = False
     llm_log_max_chars: int = 1200
     app_log_level: str = "INFO"

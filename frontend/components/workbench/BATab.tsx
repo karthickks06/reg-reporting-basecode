@@ -18,13 +18,11 @@ type BATabProps = {
   hasFunctionalSpec: boolean;
   baMode: BAAnalysisMode;
   baUserContext: string;
-  baModel: string;
   gapRows: GapRow[];
   gapDiagnostics: GapDiagnostics | null;
   remediationStatuses: string[];
   remediationArtifactIds: number[];
   remediationUserContext: string;
-  modelOptionsList: Array<{ value: string; label: string }>;
   fcaArtifactId: number | "";
   modelArtifactId: number | "";
   compareBaselineId: number | "";
@@ -36,7 +34,6 @@ type BATabProps = {
   pendingForMe: boolean;
   setBaMode: (mode: BAAnalysisMode) => void;
   setBaUserContext: (value: string) => void;
-  setBaModel: (value: string) => void;
   setRemediationStatuses: (value: string[]) => void;
   setRemediationArtifactIds: (value: number[]) => void;
   setRemediationUserContext: (value: string) => void;
@@ -62,13 +59,11 @@ export function BATab({
   hasFunctionalSpec,
   baMode,
   baUserContext,
-  baModel,
   gapRows,
   gapDiagnostics,
   remediationStatuses,
   remediationArtifactIds,
   remediationUserContext,
-  modelOptionsList,
   fcaArtifactId,
   modelArtifactId,
   compareBaselineId,
@@ -80,7 +75,6 @@ export function BATab({
   pendingForMe,
   setBaMode,
   setBaUserContext,
-  setBaModel,
   setRemediationStatuses,
   setRemediationArtifactIds,
   setRemediationUserContext,
@@ -222,14 +216,8 @@ export function BATab({
               <div className="step-title">Step 2 - Guidance (Optional)</div>
               <div className="form-grid form-grid-two">
                 <div className="field">
-                  <label>BA model</label>
-                  <select value={baModel} onChange={(e) => setBaModel(e.target.value)} disabled={formBusy}>
-                    {modelOptionsList.map((m) => (
-                      <option key={m.value} value={m.value}>
-                        {m.label}
-                      </option>
-                    ))}
-                  </select>
+                  <label>LLM Model</label>
+                  <div className="stat">GPT-4.1 (Azure OpenAI)</div>
                 </div>
                 <div className="field context-field">
                   <label>Analyst guidance</label>

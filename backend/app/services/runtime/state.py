@@ -35,8 +35,9 @@ def build_troubleshooting_steps(topic: str) -> list[str]:
         ]
     if topic == "llm":
         return [
-            "Verify AXET_LLM_URL is reachable from the host or container network.",
-            "Check TLS settings and AXET_LLM_VERIFY_SSL for the target gateway.",
+            "Verify AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY are set in backend/.env",
+            "Confirm the Azure OpenAI endpoint is reachable from the host or container network.",
+            "Verify the Azure OpenAI deployment name matches your Azure configuration.",
             "The API can remain usable in degraded mode while the LLM endpoint is offline.",
         ]
     return [

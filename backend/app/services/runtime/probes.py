@@ -206,40 +206,57 @@ def ensure_schema_tables() -> dict:
 
 
 async def probe_llm() -> dict:
-    """Probe LLM within the service layer."""
-    llm_url = settings.axet_llm_url
+    """Probe LLM within the service layer - checks Azure OpenAI configuration."""
+    # Check if Azure OpenAI is configured
+    if not settings.azure_openai_endpoint or not settings.azure_openai_api_key:
+        return {
+            "configured": False,
+            "ok": False,
+            "detail": "Azure OpenAI not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY.",
+            "endpoint": settings.azure_openai_endpoint or "not set",
+            "troubleshooting": build_troubleshooting_steps("llm"),
+        }
+
+    llm_url = settings.azure_openai_endpoint
     parsed = urlparse(llm_url)
     if not parsed.scheme or not parsed.netloc:
         return {
             "configured": True,
             "ok": False,
-            "detail": "AXET_LLM_URL is invalid.",
+            "detail": "AZURE_OPENAI_ENDPOINT is invalid.",
             "url": llm_url,
             "troubleshooting": build_troubleshooting_steps("llm"),
         }
 
+    # Probe Azure OpenAI endpoint
     base = f"{parsed.scheme}://{parsed.netloc}"
     candidates = [
-        ("GET", f"{base}/health"),
-        ("GET", f"{base}/v1/health"),
-        ("HEAD", llm_url),
-        ("GET", llm_url),
+        ("GET", f"{base}/"),
+        ("HEAD", base),
     ]
 
     timeout = httpx.Timeout(settings.startup_probe_timeout_seconds, connect=min(2.0, settings.startup_probe_timeout_seconds))
-    async with httpx.AsyncClient(timeout=timeout, verify=settings.axet_llm_verify_ssl) as client:
+    async with httpx.AsyncClient(timeout=timeout, verify=True) as client:
         for method, url in candidates:
             try:
                 resp = await client.request(method, url)
                 if 200 <= resp.status_code < 500:
-                    return {"configured": True, "ok": True, "detail": "LLM endpoint responded.", "url": llm_url}
+                    return {
+                        "configured": True,
+                        "ok": True,
+                        "detail": "Azure OpenAI endpoint is reachable.",
+                        "url": llm_url,
+                        "deployment": settings.azure_openai_deployment,
+                    }
             except Exception:
                 continue
+    
     return {
         "configured": True,
         "ok": False,
-        "detail": "LLM endpoint probe failed.",
+        "detail": "Azure OpenAI endpoint probe failed (may still work for API calls).",
         "url": llm_url,
+        "deployment": settings.azure_openai_deployment,
         "troubleshooting": build_troubleshooting_steps("llm"),
     }
 
@@ -268,7 +285,8 @@ async def collect_runtime_health() -> dict:
         "status": status,
         "service": "fca-local-api",
         "environment": settings.environment,
-        "llm_url": settings.axet_llm_url,
+        "llm_endpoint": settings.azure_openai_endpoint,
+        "llm_deployment": settings.azure_openai_deployment,
         "llm_up": llm_status.get("ok", False),
         "startup": get_startup_state(),
         "dependencies": {

@@ -15,11 +15,8 @@ export type UseWorkbenchActionsArgs = {
   sendBackReasonCode: string;
   sendBackReasonDetail: string;
   baUserContext: string;
-  baModel: string;
   devUserContext: string;
-  devModel: string;
   revUserContext: string;
-  revModel: string;
   chatInput: string;
   chatIncludeAll: boolean;
   chatModel: string;
