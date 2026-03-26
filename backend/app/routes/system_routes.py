@@ -38,7 +38,7 @@ class LlmProxyRequest(BaseModel):
 async def llm_chat(req: LlmProxyRequest):
     """Proxy a chat request through the configured LLM gateway."""
     try:
-        resp = await call_axet_chat(messages=req.messages, request_id=req.request_id, model=req.model or settings.axet_llm_model)
+        resp = await call_axet_chat(messages=req.messages, request_id=req.request_id, model=req.model or settings.azure_openai_deployment)
         return {"ok": True, "raw": resp, "content": llm_content(resp)}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"llm_chat_failed: {exc}") from exc

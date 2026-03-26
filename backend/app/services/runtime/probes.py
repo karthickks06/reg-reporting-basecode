@@ -228,37 +228,58 @@ async def probe_llm() -> dict:
             "troubleshooting": build_troubleshooting_steps("llm"),
         }
 
-    # Probe Azure OpenAI endpoint
-    base = f"{parsed.scheme}://{parsed.netloc}"
-    candidates = [
-        ("GET", f"{base}/"),
-        ("HEAD", base),
-    ]
-
-    timeout = httpx.Timeout(settings.startup_probe_timeout_seconds, connect=min(2.0, settings.startup_probe_timeout_seconds))
-    async with httpx.AsyncClient(timeout=timeout, verify=True) as client:
-        for method, url in candidates:
-            try:
-                resp = await client.request(method, url)
-                if 200 <= resp.status_code < 500:
-                    return {
-                        "configured": True,
-                        "ok": True,
-                        "detail": "Azure OpenAI endpoint is reachable.",
-                        "url": llm_url,
-                        "deployment": settings.azure_openai_deployment,
-                    }
-            except Exception:
-                continue
-    
-    return {
-        "configured": True,
-        "ok": False,
-        "detail": "Azure OpenAI endpoint probe failed (may still work for API calls).",
-        "url": llm_url,
-        "deployment": settings.azure_openai_deployment,
-        "troubleshooting": build_troubleshooting_steps("llm"),
-    }
+    # Test actual Azure OpenAI API with a minimal completion request
+    try:
+        from app.llm_client import call_axet_chat
+        
+        # Attempt a minimal test chat completion
+        test_messages = [{"role": "user", "content": "hi"}]
+        
+        # Try actual API call with configured deployment
+        resp = await call_axet_chat(
+            messages=test_messages,
+            request_id="health-probe",
+            model=settings.azure_openai_deployment
+        )
+        
+        # If we get any response without exception, LLM is working
+        return {
+            "configured": True,
+            "ok": True,
+            "detail": "Azure OpenAI endpoint is reachable and responsive.",
+            "url": llm_url,
+            "deployment": settings.azure_openai_deployment,
+        }
+    except Exception as exc:
+        # If actual API call fails, fall back to basic endpoint probe
+        base = f"{parsed.scheme}://{parsed.netloc}"
+        timeout = httpx.Timeout(settings.startup_probe_timeout_seconds, connect=min(2.0, settings.startup_probe_timeout_seconds))
+        
+        async with httpx.AsyncClient(timeout=timeout, verify=True) as client:
+            # Try basic connectivity check
+            for method, url in [("GET", f"{base}/"), ("HEAD", base)]:
+                try:
+                    resp = await client.request(method, url)
+                    if 200 <= resp.status_code < 500:
+                        return {
+                            "configured": True,
+                            "ok": True,
+                            "detail": "Azure OpenAI endpoint is reachable (API test inconclusive).",
+                            "url": llm_url,
+                            "deployment": settings.azure_openai_deployment,
+                            "warning": f"API test failed: {str(exc)[:100]}",
+                        }
+                except Exception:
+                    continue
+        
+        return {
+            "configured": True,
+            "ok": False,
+            "detail": f"Azure OpenAI endpoint probe failed: {str(exc)[:100]}",
+            "url": llm_url,
+            "deployment": settings.azure_openai_deployment,
+            "troubleshooting": build_troubleshooting_steps("llm"),
+        }
 
 
 def summarize_runtime_status(db_status: dict, llm_status: dict) -> tuple[str, bool]:

@@ -125,7 +125,7 @@ async def ask_llm_json(
             {"role": "user", "content": user_prompt},
         ],
         request_id=rid,
-        model=model or settings.axet_llm_model,
+        model=model or settings.azure_openai_deployment,
     )
     txt = llm_content(resp)
     parsed = extract_json_block(txt)
@@ -148,6 +148,6 @@ async def ask_llm_text(
             {"role": "user", "content": user_prompt},
         ],
         request_id=rid,
-        model=model or settings.axet_llm_model,
+        model=model or settings.azure_openai_deployment,
     )
     return llm_content(resp).strip()

@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     environment: str = "local"
     api_port: int = 8000
@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     auto_run_migrations: bool = False
     auto_create_schema: bool = True
     startup_probe_timeout_seconds: float = 3.0
+    
+    # Redis Configuration (Optional)
+    redis_url: str = "redis://localhost:6379/0"
+    require_redis: bool = False
 
     # Azure OpenAI Configuration (Required)
     azure_openai_endpoint: str = ""
