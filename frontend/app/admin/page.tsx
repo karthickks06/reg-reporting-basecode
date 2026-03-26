@@ -44,9 +44,12 @@ export default function AdminPage() {
     setDataModelFile,
     mappingContractFile,
     setMappingContractFile,
+    xsdFile,
+    setXsdFile,
     selectedInstruction,
     dataModelArtifacts,
     mappingContractArtifacts,
+    xsdArtifacts,
     filteredWorkflows,
     activeWorkflowCount,
     inactiveWorkflowCount,
@@ -61,6 +64,7 @@ export default function AdminPage() {
     persistInstruction,
     uploadDataModelFile,
     uploadMappingContractFile,
+    uploadXsdFile,
     persistGitHubConfig,
   } = useAdminData();
 
@@ -267,6 +271,11 @@ export default function AdminPage() {
               <div className="stat-value">{mappingContractArtifacts.length}</div>
               <div className="stat-label">Mapping Contracts</div>
             </div>
+            <div className="admin-stat-card">
+              <div className="admin-stat-card__icon"><ActionIcon name="reviewer" className="action-icon" /></div>
+              <div className="stat-value">{xsdArtifacts.length}</div>
+              <div className="stat-label">XSD Schemas</div>
+            </div>
           </div>
 
           <section className="panel">
@@ -295,6 +304,20 @@ export default function AdminPage() {
               </button>
             </div>
             <div className="admin-meta">Admin uploads report-specific mapping contracts that DEV XML generation resolves by report code.</div>
+          </section>
+
+          <section className="panel">
+            <div className="panel-header">
+              <div className="panel-title">XSD Schema Library</div>
+              <span className="panel-badge badge-slate">{xsdArtifacts.length}</span>
+            </div>
+            <div className="admin-controls">
+              <input type="file" accept=".xsd" onChange={(e) => setXsdFile(e.target.files?.[0] || null)} />
+              <button className="header-btn" onClick={uploadXsdFile} disabled={busy || !xsdFile}>
+                Upload XSD Schema
+              </button>
+            </div>
+            <div className="admin-meta">Admin uploads XSD schemas used for XML package preparation in the Developer stage.</div>
           </section>
 
           <section className="panel">

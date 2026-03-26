@@ -607,41 +607,41 @@ async def execute_xml_generation(req: Any, db: Session) -> dict[str, Any]:
 
     contract_report_code = detect_contract_report_code(expected_root, xsd_text, fca_text)
     contract_metadata = None
-    if contract_report_code:
-        if not functional_spec_art:
-            raise HTTPException(status_code=422, detail="functional_spec_required_for_contract_xml_generation")
+    out = None
+    
+    # Try contract-based generation if report code is detected
+    if contract_report_code and functional_spec_art:
         admin_contracts = load_admin_mapping_contracts(db, req.project_id, contract_report_code)
         mapping_contract = load_shared_mapping_contract(contract_report_code, artifacts=admin_contracts)
-        if not mapping_contract:
-            raise HTTPException(status_code=422, detail=f"shared_mapping_contract_missing:{contract_report_code}")
-        try:
-            xml_text, contract_metadata = render_contract_xml(
-                report_code=contract_report_code,
-                mapping_contract=mapping_contract,
-                source_rows=source_rows,
-                functional_spec=functional_spec_rows(functional_spec_art),
-            )
-            out = {
-                "summary": f"{contract_report_code} XML generated from shared mapping contract.",
-                "gap_fit_analysis": [],
-                "supporting_notes": [
-                    "XML rendered using filing-specific mapping configuration.",
-                    f"Functional specification artifact: {functional_spec_art.id}",
-                    f"Source rows rendered: {len(source_rows)}",
-                    (
-                        f"Mapping contract artifact: {admin_contracts[0].id}"
-                        if admin_contracts
-                        else "Mapping contract source: filesystem fallback"
-                    ),
-                ],
-                "next_steps": ["Run reviewer validation against XSD and business rules."],
-                "xml_report": xml_text,
-                "contract_generation": contract_metadata,
-            }
-        except ValueError as exc:
-            raise HTTPException(status_code=422, detail=str(exc)) from exc
-    else:
-        out = None
+        
+        if mapping_contract:
+            try:
+                xml_text, contract_metadata = render_contract_xml(
+                    report_code=contract_report_code,
+                    mapping_contract=mapping_contract,
+                    source_rows=source_rows,
+                    functional_spec=functional_spec_rows(functional_spec_art),
+                )
+                out = {
+                    "summary": f"{contract_report_code} XML generated from shared mapping contract.",
+                    "gap_fit_analysis": [],
+                    "supporting_notes": [
+                        "XML rendered using filing-specific mapping configuration.",
+                        f"Functional specification artifact: {functional_spec_art.id}",
+                        f"Source rows rendered: {len(source_rows)}",
+                        (
+                            f"Mapping contract artifact: {admin_contracts[0].id}"
+                            if admin_contracts
+                            else "Mapping contract source: filesystem fallback"
+                        ),
+                    ],
+                    "next_steps": ["Run reviewer validation against XSD and business rules."],
+                    "xml_report": xml_text,
+                    "contract_generation": contract_metadata,
+                }
+            except (ValueError, KeyError) as exc:
+                # Contract generation failed, fall back to LLM generation
+                out = None
 
     if out is None:
         system_prompt = active_instruction(db, "rev_xml", AGENT_DEFAULT_PROMPTS["rev_xml"])

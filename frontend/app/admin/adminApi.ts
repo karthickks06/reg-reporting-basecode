@@ -122,6 +122,18 @@ export async function uploadMappingContract(projectId: string, file: File, admin
   });
 }
 
+export async function uploadXsd(projectId: string, file: File, adminHeaders: HeaderFactory): Promise<{ filename: string }> {
+  const fd = new FormData();
+  fd.append("project_id", projectId);
+  fd.append("kind", "xsd");
+  fd.append("file", file);
+  return await fetchJson(`${API_BASE}/v1/files/upload`, {
+    method: "POST",
+    headers: adminHeaders(),
+    body: fd
+  });
+}
+
 export async function fetchGitHubIntegration(projectId: string, adminHeaders: HeaderFactory): Promise<GitHubIntegrationConfig> {
   const json = await fetchJson(
     `${API_BASE}/v1/admin/integrations/github?project_id=${encodeURIComponent(projectId)}`,

@@ -256,25 +256,34 @@ export function createAgentRunActionsAsync(args: UseWorkbenchActionsArgs, deps: 
   }
 
   async function runXmlGeneration() {
-    if (!args.dataArtifactId || !args.xsdArtifactId || !args.fcaArtifactId || !args.currentWorkflow?.functional_spec_artifact_id) return;
+    // Only require the mandatory fields: data_artifact_id and xsd_artifact_id
+    if (!args.dataArtifactId || !args.xsdArtifactId) return;
     if (!ensureWorkflowEditable(args, "XML generation")) return;
 
     const workflowId = args.activeWorkflowId;
     args.setMessage("");
 
     try {
+      const payload: any = {
+        project_id: args.projectId,
+        data_artifact_id: Number(args.dataArtifactId),
+        xsd_artifact_id: Number(args.xsdArtifactId),
+        user_context: args.devUserContext || undefined,
+        workflow_id: workflowId || undefined
+      };
+      
+      // Only include optional fields if they have valid values
+      if (args.fcaArtifactId) {
+        payload.fca_artifact_id = Number(args.fcaArtifactId);
+      }
+      if (args.currentWorkflow?.functional_spec_artifact_id) {
+        payload.functional_spec_artifact_id = args.currentWorkflow.functional_spec_artifact_id;
+      }
+
       const res = await fetch(`${API_BASE}/v1/dev/report-xml/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          project_id: args.projectId,
-          data_artifact_id: Number(args.dataArtifactId),
-          xsd_artifact_id: Number(args.xsdArtifactId),
-          fca_artifact_id: Number(args.fcaArtifactId),
-          functional_spec_artifact_id: args.currentWorkflow.functional_spec_artifact_id,
-          user_context: args.devUserContext || undefined,
-          workflow_id: workflowId || undefined
-        })
+        body: JSON.stringify(payload)
       });
 
       const json = await parseJson(res);

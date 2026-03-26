@@ -14,7 +14,8 @@ import {
   saveGitHubIntegration,
   saveInstruction,
   uploadDataModel,
-  uploadMappingContract
+  uploadMappingContract,
+  uploadXsd
 } from "./adminApi";
 import type {
   AdminWorkflowItem,
@@ -51,10 +52,12 @@ export function useAdminData() {
   const [workflowSearch, setWorkflowSearch] = useState("");
   const [dataModelFile, setDataModelFile] = useState<File | null>(null);
   const [mappingContractFile, setMappingContractFile] = useState<File | null>(null);
+  const [xsdFile, setXsdFile] = useState<File | null>(null);
 
   const selectedInstruction = useMemo(() => instructions.find((i) => i.agent_key === selectedAgent), [instructions, selectedAgent]);
   const dataModelArtifacts = useMemo(() => artifacts.filter((a) => a.kind === "data_model" && !a.is_deleted), [artifacts]);
   const mappingContractArtifacts = useMemo(() => artifacts.filter((a) => a.kind === "mapping_contract" && !a.is_deleted), [artifacts]);
+  const xsdArtifacts = useMemo(() => artifacts.filter((a) => a.kind === "xsd" && !a.is_deleted), [artifacts]);
   const filteredWorkflows = useMemo(() => {
     const search = workflowSearch.trim().toLowerCase();
     return workflows.filter((workflow) => {
@@ -248,6 +251,22 @@ export function useAdminData() {
     }
   }
 
+  async function uploadXsdFile() {
+    if (!xsdFile) return;
+    setBusy(true);
+    setMessage("");
+    try {
+      const json = await uploadXsd(projectId, xsdFile, adminHeaders);
+      setXsdFile(null);
+      await loadArtifacts();
+      setMessage(`XSD schema uploaded: ${json.filename}`);
+    } catch (e) {
+      setMessage(`XSD schema upload failed: ${String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function persistGitHubConfig() {
     setBusy(true);
     setMessage("");
@@ -305,9 +324,12 @@ export function useAdminData() {
     setDataModelFile,
     mappingContractFile,
     setMappingContractFile,
+    xsdFile,
+    setXsdFile,
     selectedInstruction,
     dataModelArtifacts,
     mappingContractArtifacts,
+    xsdArtifacts,
     filteredWorkflows,
     activeWorkflowCount,
     inactiveWorkflowCount,
@@ -322,6 +344,7 @@ export function useAdminData() {
     persistInstruction,
     uploadDataModelFile,
     uploadMappingContractFile,
+    uploadXsdFile,
     persistGitHubConfig
   };
 }

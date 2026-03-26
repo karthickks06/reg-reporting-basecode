@@ -1,0 +1,1566 @@
+<?xml version="1.0" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>PSD008 Logical Model Schema
+Auto-generated from JSON schema definition
+Contains 18 tables</xs:documentation>
+  </xs:annotation>
+  <xs:element name="PSD008_LogicalModel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="dim_reporting_firm" type="dim_reporting_firmType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="fact_credit_agreement_sale" type="fact_credit_agreement_saleType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_origination_context" type="dim_origination_contextType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_related_product" type="dim_related_productType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_credit_broker" type="dim_credit_brokerType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_p2p_platform_operator" type="dim_p2p_platform_operatorType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_agreement_duration" type="dim_agreement_durationType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_agreement_characterist" type="dim_agreement_characteristType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_borrower" type="dim_borrowerType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="bridge_credit_agreement_borrowe" type="bridge_credit_agreement_borroweType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_creditworthiness_assess" type="dim_creditworthiness_assessType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_security_details" type="dim_security_detailsType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_total_amount_credit" type="dim_total_amount_creditType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_total_charge_credit" type="dim_total_charge_creditType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_running_account_use" type="dim_running_account_useType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_penalty_charges" type="dim_penalty_chargesType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="dim_repayment_terms" type="dim_repayment_termsType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="regulatory_field_extension" type="regulatory_field_extensionType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="dim_reporting_firmType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_reporting_firm (from sheet: dim_reporting_firm)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="firm_reference_number" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Firm reference number of product provider
+PSD Reference: (General)
+Source System: Reference data / reporting setup</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reporting_firm_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for reporting firm
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_reporting_firm_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="reporting_firm_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="fact_credit_agreement_saleType">
+    <xs:annotation>
+      <xs:documentation>Table: fact_credit_agreement_sale (from sheet: fact_credit_agreement_sale)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="has_a_default_notice_taken_effect_in_relation_to_this_agreem" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Has a default notice taken effect in relation to this agreement?
+PSD Reference: 10A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transaction_reference_regulated_mortgage_contracts_and_relev" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Transaction reference (regulated mortgage contracts and relevant regulated credit agreements only)
+PSD Reference: 1A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="origination_agreement_type" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Origination agreement type
+PSD Reference: 2A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="agreement_execution_date" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Agreement execution date
+PSD Reference: 31A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="date_of_assignment_of_legal_ownership" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Date of assignment of legal ownership
+PSD Reference: 8A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credit_for_business_or_personal_use" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Credit for business or personal use
+PSD Reference: 9A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="agreement_characteristics_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_agreement_characterist
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="agreement_duration_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_agreement_duration
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credit_broker_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_credit_broker
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="creditworthiness_assessment_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_creditworthiness_assess
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="origination_context_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_origination_context
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="p2p_platform_operator_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_p2p_platform_operator
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="penalty_charges_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_penalty_charges
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="related_product_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_related_product
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="repayment_terms_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_repayment_terms
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reporting_firm_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_reporting_firm
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="running_account_usage_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_running_account_use
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="security_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_security_details
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_amount_of_credit_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_total_amount_credit
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit_id" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_total_charge_credit
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credit_agreement_sale_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for credit agreement sale
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="fact_credit_agreement_sale_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="credit_agreement_sale_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_origination_contextType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_origination_context (from sheet: dim_origination_context)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="earlier_agreement_transaction_reference_status" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Earlier agreement – transaction reference status
+PSD Reference: 3A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="earlier_agreement_transaction_reference" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Earlier agreement – transaction reference
+PSD Reference: 4A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="previous_lender_regulatory_status" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Previous lender regulatory status
+PSD Reference: 5A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="previous_lender_frn" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Previous lender FRN
+PSD Reference: 6A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="previous_lender_name" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Previous lender name
+PSD Reference: 7A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="origination_context_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for origination context
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_origination_context_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="origination_context_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_related_productType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_related_product (from sheet: dim_related_product)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="was_a_brand_name_used_other_than_the_reporting_firm_s_name" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Was a brand name used other than the reporting firm’s name?
+PSD Reference: 11A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="does_the_agreement_use_a_brand_that_represents_the_reporting" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Does the agreement use a brand that represents the reporting firm’s group or a third party?
+PSD Reference: 12A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="brand_name_used_for_the_agreement" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Brand name used for the agreement
+PSD Reference: 13A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_product_only_available_to_a_particular_class_of_indiv" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the product only available to a particular class of individual?
+PSD Reference: 14A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="were_there_any_financial_promotions_for_the_related_product" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Were there any financial promotions for the related product?
+PSD Reference: 15A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="representative_apr_used_in_financial_promotions_for_the_rela" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Representative APR used in financial promotions for the related product
+PSD Reference: 16A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="internal_reference_for_related_product" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Internal reference for related product
+PSD Reference: 17A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="related_product_name" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Related product name
+PSD Reference: 18A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="related_product_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for related product
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_related_product_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="related_product_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_credit_brokerType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_credit_broker (from sheet: dim_credit_broker)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="did_another_person_effect_an_introduction_of_the_borrower_s" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Did another person effect an introduction of the borrower(s) to the reporting firm?
+PSD Reference: 23A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credit_broker_frn" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Credit broker FRN
+PSD Reference: 24A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credit_broker_name" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Credit broker name
+PSD Reference: 25A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="commission_paid_by_reporting_firm_to_credit_broker" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Commission paid by reporting firm to credit broker
+PSD Reference: 26A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="commission_received_by_reporting_firm_from_credit_broker" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Commission received by reporting firm from credit broker
+PSD Reference: 27A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credit_broker_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for credit broker
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_credit_broker_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="credit_broker_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_p2p_platform_operatorType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_p2p_platform_operator (from sheet: dim_p2p_platform_operator)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="is_the_credit_agreement_also_a_p2p_agreement" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the credit agreement also a P2P agreement?
+PSD Reference: 28A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="p2p_platform_operator_frn" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>P2P platform operator FRN
+PSD Reference: 29A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="p2p_platform_operator_name" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>P2P platform operator name
+PSD Reference: 30A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="p2p_platform_operator_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for P2P platform operator
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_p2p_platform_operator_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="p2p_platform_operator_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_agreement_durationType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_agreement_duration (from sheet: dim_agreement_duration)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="is_the_agreement_an_open_end_agreement" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the agreement an open-end agreement?
+PSD Reference: 32A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="agreement_end_date" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Agreement end date
+PSD Reference: 33A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_there_a_minimum_duration_for_the_open_end_agreement" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is there a minimum duration for the open-end agreement?
+PSD Reference: 34A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minimum_duration_end_date" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Minimum duration end date
+PSD Reference: 35A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="agreement_duration_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for agreement duration
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_agreement_duration_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="agreement_duration_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_agreement_characteristType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_agreement_characterist (from sheet: dim_agreement_characterist)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="do_any_financial_promotions_for_the_related_product_make_ref" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Do any financial promotions for the related product make reference to it being available to an individual with restricted access to credit?
+PSD Reference: 19A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="how_the_sale_was_made" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>How the sale was made
+PSD Reference: 21A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="postcode_of_trade_premises_where_sale_was_made" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Postcode of trade premises where sale was made
+PSD Reference: 22A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_agreement_a_credit_token_agreement" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the agreement a credit token agreement?
+PSD Reference: 36A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_facility_under_the_credit_agreement_fixed_sum_or_runn" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the facility under the credit agreement fixed-sum or running-account?
+PSD Reference: 37A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="how_can_the_running_account_credit_be_used" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>How can the running-account credit be used?
+PSD Reference: 38A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="payment_network" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Payment network
+PSD Reference: 39A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="with_which_suppliers_can_the_running_account_credit_be_used" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>With which suppliers can the running-account credit be used?
+PSD Reference: 40A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regulatory_status_of_the_supplier_in_respect_of_whom_the_run" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regulatory status of the supplier in respect of whom the running-account credit applies
+PSD Reference: 41A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="running_account_credit_supplier_frn" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Running-account credit supplier FRN
+PSD Reference: 42A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="running_account_credit_supplier_name" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Running-account credit supplier name
+PSD Reference: 43A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_agreement_a_bnpl_agreement" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the agreement a BNPL agreement?
+PSD Reference: 44A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="type_of_periodic_premiums_or_fees" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of periodic premiums or fees
+PSD Reference: 45A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_agreement_a_borrower_lender_agreement_or_a_borrower_l" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the agreement a borrower-lender agreement or a borrower-lender-supplier agreement?
+PSD Reference: 46A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="supplier_regulatory_status" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Supplier regulatory status
+PSD Reference: 47A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="supplier_frn" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Supplier FRN
+PSD Reference: 48A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="supplier_name" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Supplier name
+PSD Reference: 49A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_agreement_one_of_these_specific_contract_types" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the agreement one of these specific contract types?
+PSD Reference: 50A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="does_the_agreement_meet_the_criteria_of_one_of_these_agreeme" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Does the agreement meet the criteria of one of these agreement types as defined in the FCA Handbook?
+PSD Reference: 51A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="end_date_of_promotional_period_for_bnpl_credit" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>End date of promotional period for BNPL credit
+PSD Reference: 52A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="type_of_goods_or_services_provided_by_the_supplier_financed" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of goods or services provided by the supplier financed by the agreement
+PSD Reference: 53A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="was_the_motor_vehicle_financed_new_or_used" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Was the motor vehicle financed new or used?
+PSD Reference: 54A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="type_of_motor_vehicle_financed" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of motor vehicle financed
+PSD Reference: 55A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_hire_purchase_agreement_a_personal_contract_purchase" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the hire-purchase agreement a personal contract purchase agreement?
+PSD Reference: 56A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="guaranteed_minimum_future_value" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Guaranteed minimum future value
+PSD Reference: 57A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="anticipated_annual_mileage" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Anticipated annual mileage
+PSD Reference: 58A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="declared_purpose_of_borrowing" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Declared purpose of borrowing
+PSD Reference: 59A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="was_any_portion_of_the_loan_for_direct_payment_to_existing_c" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Was any portion of the loan for direct payment to existing creditors?
+PSD Reference: 60A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value_of_direct_payments_to_existing_creditors" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Value of direct payments to existing creditors
+PSD Reference: 61A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reporting_firm_s_unique_reference_for_natural_person_acting" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Reporting firm’s unique reference for natural person acting as guarantor
+PSD Reference: 82A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="guarantor_s_date_of_birth" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Guarantor’s date of birth
+PSD Reference: 83A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="guarantor_s_residential_address_type" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Guarantor’s residential address type
+PSD Reference: 84A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="guarantor_s_residential_postcode_on_the_agreement_execution" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Guarantor’s residential postcode on the agreement execution date
+PSD Reference: 85A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="guarantor_s_residential_status_on_the_agreement_execution_da" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Guarantor’s residential status on the agreement execution date
+PSD Reference: 86A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="guarantor_s_employment_status_on_the_agreement_execution_dat" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Guarantor’s employment status on the agreement execution date
+PSD Reference: 87A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="detail_of_guarantor_s_employment" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Detail of guarantor’s employment
+PSD Reference: 88A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="detail_of_guarantor_s_not_employed_status" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Detail of guarantor’s not employed status
+PSD Reference: 89A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="did_the_creditworthiness_assessment_of_the_guarantor_for_the" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Did the creditworthiness assessment of the guarantor for the agreement include any manual underwriting check?
+PSD Reference: 90A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="income_and_expenditure_information_held_in_relation_to_the_c" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Income and expenditure information held in relation to the creditworthiness assessment of the guarantor
+PSD Reference: 91A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="number_of_financial_dependants_for_the_guarantor" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Number of financial dependants for the guarantor
+PSD Reference: 92A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="net_or_gross_income_values_for_guarantor" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Net or gross income values for guarantor
+PSD Reference: 93A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="monthly_income_of_the_guarantor_used_by_the_reporting_firm" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Monthly income of the guarantor used by the reporting firm
+PSD Reference: 94A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_monthly_expenditure_of_the_guarantor_used_by_the_repor" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total monthly expenditure of the guarantor used by the reporting firm
+PSD Reference: 95A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="monthly_income_declared_by_the_guarantor" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Monthly income declared by the guarantor
+PSD Reference: 96A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_monthly_expenditure_declared_by_the_guarantor" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total monthly expenditure declared by the guarantor
+PSD Reference: 97A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="specific_type_of_monthly_expenditure_of_the_guarantor_used_b" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Specific type of monthly expenditure of the guarantor used by the reporting firm
+PSD Reference: 98A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="specific_total_monthly_expenditure_of_the_guarantor_used_by" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Specific total monthly expenditure of the guarantor used by the reporting firm
+PSD Reference: 98B
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="agreement_characteristics_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for agreement characteristics
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_agreement_characterist_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="agreement_characteristics_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_borrowerType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_borrower (from sheet: dim_borrower)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="is_the_borrower_a_natural_person_acting_as_a_sole_trader_or" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the borrower a natural person acting as a sole trader or a relevant recipient of credit?
+PSD Reference: 62A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reporting_firm_s_unique_reference_for_relevant_recipient_of" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Reporting firm’s unique reference for relevant recipient of credit
+PSD Reference: 63A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="name_of_relevant_recipient_of_credit" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Name of relevant recipient of credit
+PSD Reference: 64A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="number_of_borrowers_named_in_the_agreement" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Number of borrowers named in the agreement
+PSD Reference: 65A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reporting_firm_s_unique_reference_for_natural_person_acting" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Reporting firm’s unique reference for natural person acting as borrower
+PSD Reference: 66A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="borrower_s_date_of_birth" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Borrower’s date of birth
+PSD Reference: 66B
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="borrower_s_residential_address_type" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Borrower’s residential address type
+PSD Reference: 66C
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="borrower_s_residential_postcode_on_the_agreement_execution_d" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Borrower’s residential postcode on the agreement execution date
+PSD Reference: 66D
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="borrower_s_residential_status_on_the_agreement_execution_dat" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Borrower’s residential status on the agreement execution date
+PSD Reference: 66E
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="borrower_s_employment_status_on_the_agreement_execution_date" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Borrower’s employment status on the agreement execution date
+PSD Reference: 66F
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="detail_of_borrower_s_employment" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Detail of borrower’s employment
+PSD Reference: 66G
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="detail_of_borrower_s_not_employed_status" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Detail of borrower’s not employed status
+PSD Reference: 66H
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="borrower_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for borrower
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_borrower_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="borrower_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="bridge_credit_agreement_borroweType">
+    <xs:annotation>
+      <xs:documentation>Table: bridge_credit_agreement_borrowe (from sheet: bridge_credit_agreement_borrowe)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="borrower_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to dim_borrower
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credit_agreement_sale_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Links to fact_credit_agreement_sale
+Source System: EDW
+Key Type: FK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="borrower_sequence_number" type="xs:integer" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Sequence for multi-borrower agreements
+PSD Reference: 65A
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="bridge_credit_agreement_borrowe_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="borrower_sequence_number"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_creditworthiness_assessType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_creditworthiness_assess (from sheet: dim_creditworthiness_assess)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="did_the_creditworthiness_assessment_of_the_borrower_s_for_th" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Did the creditworthiness assessment of the borrower(s) for the agreement include any manual underwriting check?
+PSD Reference: 67A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="income_and_expenditure_information_held_in_relation_to_the_c" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Income and expenditure information held in relation to the creditworthiness assessment of the borrower(s)
+PSD Reference: 68A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_a_future_lump_sum_expected_to_account_for_whole_or_partia" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is a future lump sum expected to account for whole or partial repayment but not as a security?
+PSD Reference: 69A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_repayment_through_a_future_earnings_agreement_income_shar" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is repayment through a future earnings agreement/income share agreement?
+PSD Reference: 70A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combined_number_of_financial_dependants_for_the_borrower_s" type="xs:integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Combined number of financial dependants for the borrower(s)
+PSD Reference: 71A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="net_or_gross_income_values_for_borrower_s" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Net or gross income values for borrower(s)
+PSD Reference: 72A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combined_monthly_income_of_the_borrower_s_used_by_the_report" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Combined monthly income of the borrower(s) used by the reporting firm
+PSD Reference: 73A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combined_total_monthly_expenditure_of_the_borrower_s_used_by" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Combined total monthly expenditure of the borrower(s) used by the reporting firm
+PSD Reference: 74A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combined_monthly_income_declared_by_the_borrower_s" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Combined monthly income declared by the borrower(s)
+PSD Reference: 75A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combined_total_monthly_expenditure_declared_by_the_borrower" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Combined total monthly expenditure declared by the borrower(s)
+PSD Reference: 76A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="specific_type_of_combined_monthly_expenditure_of_the_borrowe" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Specific type of combined monthly expenditure of the borrower(s) used by the reporting firm
+PSD Reference: 77A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="specific_combined_total_monthly_expenditure_of_the_borrower" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Specific combined total monthly expenditure of the borrower(s) used by the reporting firm
+PSD Reference: 77B
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="creditworthiness_assessment_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for creditworthiness assessment
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_creditworthiness_assess_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="creditworthiness_assessment_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_security_detailsType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_security_details (from sheet: dim_security_details)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="type_of_security_provided_by_borrower_s_in_relation_to_agree" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of security provided by borrower(s) in relation to agreement
+PSD Reference: 78A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="estimated_value_of_security_provided_by_borrower_s_in_relati" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Estimated value of security provided by borrower(s) in relation to agreement
+PSD Reference: 79A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="what_type_of_future_lump_sum_is_the_security" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>What type of future lump sum is the security?
+PSD Reference: 80A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_person_who_has_provided_the_guarantee_or_the_indemnit" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the person who has provided the guarantee or the indemnity (or both) a natural person?
+PSD Reference: 81A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="security_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for security / guarantee
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_security_details_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="security_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_total_amount_creditType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_total_amount_credit (from sheet: dim_total_amount_credit)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="the_value_of_the_total_amount_of_credit_which_is_not_advance" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The value of the total amount of credit which is not advanced to the borrower(s) at the start of the agreement
+PSD Reference: 100A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_cash_price_of_all_goods_and_services_financed_by_the_a" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total cash price of all goods and services financed by the agreement
+PSD Reference: 101A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="advance_payment" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Advance payment
+PSD Reference: 102A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_amount_of_credit" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total amount of credit
+PSD Reference: 99A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_amount_of_credit_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for total amount of credit
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_total_amount_credit_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="total_amount_of_credit_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_total_charge_creditType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_total_charge_credit (from sheet: dim_total_charge_credit)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="apr" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>APR
+PSD Reference: 103A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_the_annual_interest_rate_fixed_or_variable" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is the annual interest rate fixed or variable?
+PSD Reference: 104A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="does_the_rate_of_interest_reduce_over_time_in_response_to_in" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Does the rate of interest reduce over time in response to indicators of reduced risk?
+PSD Reference: 105A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="annual_interest_rate" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Annual interest rate
+PSD Reference: 106A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total charge for credit
+PSD Reference: 107A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit_total_fees_or_charges_payable_by_the" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total charge for credit: Total fees or charges payable by the borrower(s) to a credit broker in connection with the agreement
+PSD Reference: 108A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit_total_one_off_costs_payable_to_the_r" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total charge for credit: Total one-off costs payable to the reporting firm upon entering into the agreement
+PSD Reference: 109A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit_total_periodic_fees_or_charges_payab" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total charge for credit: Total periodic fees or charges payable
+PSD Reference: 110A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_periodic_fees_or_charges_payable_in_an_annual_period" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total periodic fees or charges payable in an annual period
+PSD Reference: 111A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_there_an_initial_promotional_period_during_which_regular" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is there an initial promotional period during which regular periodic fees are not charged?
+PSD Reference: 112A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit_total_interest_payable" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total charge for credit: Total interest payable
+PSD Reference: 113A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit_total_other_costs_included_in_the_to" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Total charge for credit: Total other costs included in the total charge for credit
+PSD Reference: 114A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="total_charge_for_credit_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for total charge for credit
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_total_charge_credit_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="total_charge_for_credit_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_running_account_useType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_running_account_use (from sheet: dim_running_account_use)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="can_qualifying_drawdowns_for_purchases_be_repaid_with_an_ins" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Can qualifying drawdowns for purchases be repaid with an instalment plan?
+PSD Reference: 115A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="does_the_product_include_any_rewards_for_making_qualifying_d" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Does the product include any rewards for making qualifying drawdowns?
+PSD Reference: 116A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="type_of_rewards_for_borrower_s_to_make_drawdowns" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of rewards for borrower(s) to make drawdowns
+PSD Reference: 117A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regular_non_promotional_percentage_fee_for_non_sterling_draw" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regular (non-promotional) percentage fee for non-sterling drawdowns
+PSD Reference: 118A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regular_non_promotional_minimum_fee_for_non_sterling_drawdow" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regular (non-promotional) minimum fee for non-sterling drawdowns
+PSD Reference: 119A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="drawdown_type" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Drawdown type
+PSD Reference: 120A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="is_there_an_initial_promotional_period_for_drawdowns" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Is there an initial promotional period for drawdowns?
+PSD Reference: 120B
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="promotional_annual_interest_rate_for_drawdowns" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Promotional annual interest rate for drawdowns
+PSD Reference: 120C
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="promotional_percentage_fee_for_drawdowns" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Promotional percentage fee for drawdowns
+PSD Reference: 120D
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="promotional_minimum_fee_per_drawdown" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Promotional minimum fee per drawdown
+PSD Reference: 120E
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="promotional_fixed_fee_per_drawdown" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Promotional fixed fee per drawdown
+PSD Reference: 120F
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="promotional_end_date_for_qualifying_drawdowns" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Promotional end date for qualifying drawdowns
+PSD Reference: 120G
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="promotional_end_date_for_promotional_rate_for_drawdowns" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Promotional end date for promotional rate for drawdowns
+PSD Reference: 120H
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regular_non_promotional_annual_interest_rate_for_drawdowns" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regular (non-promotional) annual interest rate for drawdowns
+PSD Reference: 120I
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regular_non_promotional_percentage_fee_for_drawdowns" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regular (non-promotional) percentage fee for drawdowns
+PSD Reference: 120J
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regular_non_promotional_minimum_fee_per_drawdown" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regular (non-promotional) minimum fee per drawdown
+PSD Reference: 120K
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regular_non_promotional_fixed_fee_per_drawdown" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regular (non-promotional) fixed fee per drawdown
+PSD Reference: 120L
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="annual_interest_rate_for_periodic_premium_or_fee" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Annual interest rate for periodic premium or fee
+PSD Reference: 121A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="running_account_usage_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for running account usage
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_running_account_use_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="running_account_usage_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_penalty_chargesType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_penalty_charges (from sheet: dim_penalty_charges)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="penalty_charge_for_a_late_repayment" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Penalty charge for a late repayment
+PSD Reference: 122A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="penalty_charge_for_a_repayment_returned_unpaid" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Penalty charge for a repayment returned unpaid
+PSD Reference: 123A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="penalty_charge_for_agreement_balance_being_over_the_agreed_c" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Penalty charge for agreement balance being over the agreed credit limit
+PSD Reference: 124A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="penalty_charges_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for penalty charges
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_penalty_charges_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="penalty_charges_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="dim_repayment_termsType">
+    <xs:annotation>
+      <xs:documentation>Table: dim_repayment_terms (from sheet: dim_repayment_terms)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="repayment_method_arranged" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Repayment method arranged
+PSD Reference: 125A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="frequency_of_regular_repayments_or_statements" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Frequency of regular repayments or statements
+PSD Reference: 126A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="number_of_repayments_scheduled" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Number of repayments scheduled
+PSD Reference: 127A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="amount_of_regular_repayment" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Amount of regular repayment
+PSD Reference: 128A
+Source System: EDW (sourced from LOS/LMS as applicable)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="repayment_terms_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Surrogate key for repayment terms
+Source System: EDW
+Key Type: PK</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:key name="dim_repayment_terms_PK">
+      <xs:selector xpath="."/>
+      <xs:field xpath="repayment_terms_id"/>
+    </xs:key>
+  </xs:complexType>
+  <xs:complexType name="regulatory_field_extensionType">
+    <xs:annotation>
+      <xs:documentation>Table: regulatory_field_extension (from sheet: regulatory_field_extension)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="entity_type" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Target entity type (e.g., fact_credit_agreement_sale)
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="entity_id" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Identifier of the target entity row
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regulatory_report_code" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Report code (e.g., PSD008)
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regulatory_field_code" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Regulatory field identifier for added/changed items
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="regulatory_field_name" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Human readable field name
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="data_type" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Declared data type
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value_string" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Value as string (if applicable)
+Source System: EDW / RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value_number" type="xs:decimal" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Value as number (if applicable)
+Source System: EDW / RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value_date" type="xs:date" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Value as date (if applicable)
+Source System: EDW / RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value_bool" type="xs:boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Value as boolean (if applicable)
+Source System: EDW / RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="effective_from" type="xs:date" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Effective from date to support versioning
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="source_system" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Originating system identifier
+Source System: RRaaS platform</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
