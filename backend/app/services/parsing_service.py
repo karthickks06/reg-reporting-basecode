@@ -241,7 +241,57 @@ def extract_model_catalog(path: Path) -> dict:
                 continue
             seen2.add(k)
             deduped.append(str(v).strip())
-        return {"sheets": sheets, "fields": deduped[:5000], "targets": deduped[:5000], "headers": raw_headers[:5000]}
+        
+        # Generate structured tables array for SQL generation
+        tables_array = []
+        for sheet_name, sheet_cols in sheets.items():
+            table_name = safe_sql_name(sheet_name, fallback="table")
+            columns = []
+            
+            # Try to find the data in the sheet
+            try:
+                df = pd.read_excel(path, sheet_name=sheet_name)
+                lower_col_map = {str(c).strip().lower(): c for c in df.columns if str(c).strip()}
+                
+                # Look for a column name column
+                column_col = next((lower_col_map[k] for k in lower_col_map 
+                                 if any(x in k for x in ("column", "field", "attribute", "element", "name"))), None)
+                
+                if column_col:
+                    # Extract column names from the dedicated column
+                    col_vals = df[column_col].dropna().astype(str).head(3000).tolist()
+                    for raw_val in col_vals:
+                        c = re.sub(r"\s+", " ", raw_val.strip())
+                        if c and c.lower() not in {"nan", "none", "-", ""}:
+                            if len(c) <= 120 and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", c):
+                                columns.append({"name": c, "source_name": c})
+                else:
+                    # Fall back to using sheet column headers as table columns
+                    for col in sheet_cols:
+                        if col and not _is_noise_model_candidate(col):
+                            safe_col = safe_sql_name(col, fallback="col")
+                            columns.append({"name": safe_col, "source_name": col})
+            except Exception:
+                # If we can't read the sheet, use header names
+                for col in sheet_cols:
+                    if col and not _is_noise_model_candidate(col):
+                        safe_col = safe_sql_name(col, fallback="col")
+                        columns.append({"name": safe_col, "source_name": col})
+            
+            if columns:
+                tables_array.append({
+                    "table_name": table_name,
+                    "source_name": sheet_name,
+                    "columns": columns
+                })
+        
+        return {
+            "sheets": sheets, 
+            "fields": deduped[:5000], 
+            "targets": deduped[:5000], 
+            "headers": raw_headers[:5000],
+            "tables": tables_array
+        }
     if ext == ".csv":
         df = pd.read_csv(path, nrows=1000)
         cols = [str(c).strip() for c in df.columns if str(c).strip() and not _is_noise_model_candidate(str(c).strip())]

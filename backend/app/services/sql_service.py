@@ -410,20 +410,31 @@ def extract_schema_from_artifact(artifact_json: dict, artifact_file_path: str | 
         return schema
     
     # Check if this is a flattened format (fields/headers/targets)
-    # If so, try reading from actual file instead
+    # If so, try re-parsing from actual file instead
     if "headers" in artifact_json and "fields" in artifact_json and "tables" not in artifact_json:
-        logger.info("Detected flattened format in extracted_json, attempting to read from file")
+        logger.info("Detected flattened format in extracted_json, attempting to re-parse from file")
         if artifact_file_path and Path(artifact_file_path).exists():
             try:
-                with open(artifact_file_path, 'r', encoding='utf-8') as f:
-                    file_json = json.load(f)
-                    if isinstance(file_json, dict) and "tables" in file_json:
-                        logger.info(f"Successfully loaded schema from file with {len(file_json.get('tables', []))} tables")
-                        artifact_json = file_json
-                    else:
-                        logger.warning("File content doesn't have expected 'tables' structure")
+                file_path = Path(artifact_file_path)
+                ext = file_path.suffix.lower()
+                
+                # Only try to read JSON files as JSON - Excel files need special parsing
+                if ext == '.json':
+                    with open(artifact_file_path, 'r', encoding='utf-8') as f:
+                        file_json = json.load(f)
+                        if isinstance(file_json, dict) and "tables" in file_json:
+                            logger.info(f"Successfully loaded schema from JSON file with {len(file_json.get('tables', []))} tables")
+                            artifact_json = file_json
+                        else:
+                            logger.warning("JSON file content doesn't have expected 'tables' structure")
+                elif ext in {'.xlsx', '.xls'}:
+                    logger.warning(f"Cannot re-parse Excel file at runtime. Please re-upload the artifact: {artifact_file_path}")
+                    # Excel files can't be re-parsed here - they need proper pandas/openpyxl parsing
+                    # User needs to re-upload the artifact to trigger extract_model_catalog
+                else:
+                    logger.warning(f"Unsupported file type for re-parsing: {ext}")
             except Exception as e:
-                logger.error(f"Failed to read from artifact file {artifact_file_path}: {e}")
+                logger.error(f"Failed to re-parse artifact file {artifact_file_path}: {e}")
         else:
             logger.warning(f"Cannot read from file: path={artifact_file_path}, exists={Path(artifact_file_path).exists() if artifact_file_path else False}")
     

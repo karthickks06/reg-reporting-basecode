@@ -353,6 +353,74 @@ def restore_artifact(
     return {"ok": True, "artifact_id": artifact_id}
 
 
+@router.post("/v1/admin/artifacts/{artifact_id}/reparse")
+def reparse_artifact(
+    artifact_id: int,
+    request: Request,
+    project_id: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    """Reparse an existing artifact to update its extracted_json with latest parsing logic."""
+    verify_admin(request)
+    row = db.query(Artifact).filter(Artifact.id == artifact_id, Artifact.project_id == project_id).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="artifact_not_found")
+    
+    file_path = Path(row.file_path)
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="artifact_file_missing")
+    
+    # Re-extract based on kind
+    k = (row.kind or "").strip().lower()
+    extracted_json = None
+    
+    if k == "data_model":
+        extracted_json = strip_nul_recursive(extract_model_catalog(file_path))
+    elif k == "data":
+        extracted_json = strip_nul_recursive({"rows": extract_data_rows(file_path)})
+    elif k == "mapping_contract":
+        extracted_json = extract_mapping_contract(file_path)
+        if not extracted_json:
+            raise HTTPException(status_code=422, detail="invalid_mapping_contract_document")
+    
+    # Update the artifact
+    old_json_keys = list((row.extracted_json or {}).keys()) if isinstance(row.extracted_json, dict) else []
+    row.extracted_json = extracted_json
+    
+    # Log the reparse action
+    log_system_audit(
+        db,
+        event_type="artifact_reparsed",
+        event_category="DATA_OPERATION",
+        severity="info",
+        actor="admin",
+        description=f"Reparsed {k} artifact: {row.filename}",
+        target_type="artifact",
+        target_id=str(artifact_id),
+        details={
+            "project_id": project_id,
+            "kind": k,
+            "filename": row.filename,
+            "old_json_keys": old_json_keys,
+            "new_json_keys": list((extracted_json or {}).keys()) if isinstance(extracted_json, dict) else [],
+            "has_tables_key": "tables" in (extracted_json or {}) if isinstance(extracted_json, dict) else False,
+        },
+        status="success",
+    )
+    
+    db.commit()
+    db.refresh(row)
+    
+    return {
+        "ok": True,
+        "artifact_id": artifact_id,
+        "kind": k,
+        "filename": row.filename,
+        "has_tables_key": "tables" in (row.extracted_json or {}) if isinstance(row.extracted_json, dict) else False,
+        "extracted_json_keys": list((row.extracted_json or {}).keys()) if isinstance(row.extracted_json, dict) else [],
+    }
+
+
 @router.get("/v1/admin/artifacts")
 def admin_list_artifacts(
     request: Request,
