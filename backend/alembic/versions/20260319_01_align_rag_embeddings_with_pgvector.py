@@ -58,13 +58,18 @@ def upgrade() -> None:
         ON rag_chunks (project_id, source_ref)
         """
     )
-    op.execute(
-        """
-        CREATE INDEX IF NOT EXISTS ix_rag_chunks_embedding_ivfflat
-        ON rag_chunks USING ivfflat (embedding vector_cosine_ops)
-        WITH (lists = 100)
-        """
-    )
+    # Only create ivfflat index if table has data
+    # ivfflat requires training data and will fail on empty tables
+    bind = op.get_bind()
+    row_count = bind.execute(sa.text("SELECT COUNT(*) FROM rag_chunks")).scalar()
+    if row_count and row_count >= 100:
+        op.execute(
+            """
+            CREATE INDEX IF NOT EXISTS ix_rag_chunks_embedding_ivfflat
+            ON rag_chunks USING ivfflat (embedding vector_cosine_ops)
+            WITH (lists = 100)
+            """
+        )
 
 
 def downgrade() -> None:

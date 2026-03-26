@@ -3,7 +3,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --ssl-strict=false --legacy-peer-deps
+RUN npm ci --strict-ssl=false
 
 COPY . .
 
