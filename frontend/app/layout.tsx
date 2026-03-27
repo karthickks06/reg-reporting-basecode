@@ -20,20 +20,22 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 try {
                   var saved = localStorage.getItem('regai-theme');
                   var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  }
                   document.documentElement.setAttribute('data-theme', theme);
                 } catch (e) {
+                  document.documentElement.classList.add('dark');
                   document.documentElement.setAttribute('data-theme', 'dark');
                 }
               })();
             `,
           }}
         />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        />
       </head>
-      <body className="regai-root-shell">{children}</body>
+      <body className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 antialiased">
+        {children}
+      </body>
     </html>
   );
 }
