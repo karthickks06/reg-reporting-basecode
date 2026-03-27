@@ -56,7 +56,8 @@
   --space-md: 0.75rem;
   --space-lg: 1rem;
   --space-2xl: 1.6rem;
-  --radius-lg: 0.9rem;
+  --radius-lg: 1.2rem;
+  --radius-xl: 1.6rem;
   --transition-fast: 160ms ease;
   --transition-base: 220ms ease;
   --z-tooltip: 2000;
@@ -249,13 +250,14 @@ body::after {
 .dashboard-shell.regai-wrap,
 .admin-shell,
 .analytics-dashboard {
-  width: min(1320px, calc(100% - 2rem));
+  width: min(1320px, calc(100% - 3rem));
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .dashboard-shell.regai-wrap {
-  padding-top: 1rem;
-  padding-bottom: 1.5rem;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
 }
 
 .dashboard-shell,
@@ -294,10 +296,11 @@ body::after {
 }
 
 .persona-login-panel {
-  width: min(960px, calc(100% - 1rem));
+  width: min(960px, calc(100% - 2rem));
   margin: 2.6rem auto 1.5rem;
-  padding: 1.9rem 2rem 1.55rem;
+  padding: 2.2rem 2.5rem 2rem;
   border: 1px solid color-mix(in oklab, var(--accent), transparent 76%);
+  border-radius: var(--radius-xl);
   background:
     radial-gradient(circle at 12% 12%, color-mix(in oklab, var(--accent), transparent 90%), transparent 28%),
     radial-gradient(circle at 88% 0%, rgba(79, 70, 229, 0.16), transparent 22%),
@@ -308,10 +311,10 @@ body::after {
 .persona-login-hero {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.1rem;
-  padding: 1rem 1rem 0.92rem;
-  border-radius: 1.28rem;
+  gap: 1.2rem;
+  margin-bottom: 1.3rem;
+  padding: 1.3rem 1.4rem 1.2rem;
+  border-radius: var(--radius-lg);
   border: 1px solid color-mix(in oklab, var(--line), transparent 10%);
   background:
     linear-gradient(135deg, color-mix(in oklab, var(--surface-strong), transparent 0%) 0%, color-mix(in oklab, var(--surface-soft), transparent 8%) 100%);
@@ -528,29 +531,30 @@ body::after {
 }
 
 .app-shell {
-  width: min(1400px, calc(100% - 1rem));
+  width: min(1400px, calc(100% - 2rem));
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1.2rem;
   align-items: start;
-  padding: 1rem 0.25rem 1.2rem;
+  padding: 1.5rem 1rem 2rem;
   min-height: 100vh;
 }
 
 .app-shell__sidebar {
   position: sticky;
-  top: 1rem;
+  top: 1.5rem;
   z-index: 5;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  padding: 1.05rem 0.92rem;
-  border-radius: 1.4rem;
+  gap: 1rem;
+  padding: 1.3rem 1.1rem;
+  border-radius: var(--radius-xl);
   background:
     radial-gradient(circle at 0% 0%, color-mix(in oklab, var(--accent), transparent 88%), transparent 26%),
     linear-gradient(180deg, color-mix(in oklab, var(--surface-strong), transparent 0%) 0%, color-mix(in oklab, var(--surface-soft), transparent 10%) 100%) !important;
   border: 1px solid color-mix(in oklab, var(--line), transparent 8%);
+  box-shadow: var(--shadow-soft) !important;
 }
 
 .app-shell__brand {
@@ -596,7 +600,7 @@ body::after {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 1.2rem;
   position: relative;
   z-index: 20;
 }
@@ -604,8 +608,8 @@ body::after {
 .app-shell__header {
   position: relative;
   z-index: 30;
-  padding: 0.95rem 1.2rem 0.82rem;
-  border-radius: 1.4rem;
+  padding: 1.3rem 1.6rem 1.2rem;
+  border-radius: var(--radius-xl);
   background:
     radial-gradient(circle at top right, color-mix(in oklab, var(--accent), transparent 90%), transparent 28%),
     radial-gradient(circle at 76% -20%, rgba(79, 70, 229, 0.14), transparent 24%),
@@ -624,17 +628,21 @@ body::after {
 .app-shell__title-block h1 {
   margin: 0;
   font-size: clamp(1.75rem, 3vw, 2.7rem);
-  line-height: 0.98;
+  line-height: 1.1;
   letter-spacing: -0.05em;
   font-weight: 800;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .app-shell__title-block p {
-  margin: 0.32rem 0 0;
-  line-height: 1.55;
-  max-width: 58ch;
-  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+  line-height: 1.6;
+  max-width: 65ch;
+  font-size: 0.95rem;
   color: var(--text-muted);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .app-shell__header-tools {
@@ -1034,6 +1042,8 @@ h3,
 .stage-count,
 .admin-row > div:first-child > div:first-child {
   color: var(--text-main) !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 p,
@@ -1060,6 +1070,8 @@ td,
 .empty-activity,
 .workflow-empty {
   color: var(--text-muted) !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .project-message {
@@ -1561,10 +1573,10 @@ select:focus,
 .workflow-card {
   position: relative;
   overflow: hidden;
-  border-radius: 1.28rem;
-  padding: 1.1rem;
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.5rem;
   display: grid;
-  gap: 0.82rem;
+  gap: 1rem;
   border: 1px solid color-mix(in oklab, var(--line), transparent 8%);
   background:
     radial-gradient(circle at top right, color-mix(in oklab, var(--accent), transparent 90%), transparent 28%),
