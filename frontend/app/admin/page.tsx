@@ -12,7 +12,7 @@ import { fetchGateConfigs, updateGateConfig, resetGateConfig } from "./gateConfi
 import { projectLabel, projectOptionsWithCurrent } from "../../components/workbench/projectOptions";
 import "./admin.css";
 
-type AdminSection = "overview" | "workflows" | "artifacts" | "gates" | "instructions" | "audit" | "logs";
+type AdminSection = "overview" | "workflows" | "artifacts" | "gates" | "instructions" | "audit" | "logs" | "config";
 
 export default function AdminPage() {
   const {
@@ -142,36 +142,32 @@ export default function AdminPage() {
       stageLabel="Admin"
       navItems={[
         { key: "workbench", label: "Workbench", icon: "home", href: "/" },
-        { key: "admin", label: "Admin", icon: "admin", active: true },
+        { 
+          key: "admin", 
+          label: "Admin", 
+          icon: "admin", 
+          active: true,
+          subItems: [
+            { key: "overview", label: "Overview", icon: "analytics", active: activeSection === "overview", onClick: () => handleSectionChange("overview") },
+            { key: "workflows", label: "Workflows", icon: "workflow", active: activeSection === "workflows", onClick: () => handleSectionChange("workflows"), badge: filteredWorkflows.length },
+            { key: "artifacts", label: "Artifacts", icon: "artifacts", active: activeSection === "artifacts", onClick: () => handleSectionChange("artifacts"), badge: artifacts.length },
+            { key: "gates", label: "Gate Configuration", icon: "admin", active: activeSection === "gates", onClick: () => handleSectionChange("gates") },
+            { key: "config", label: "Workspace Configuration", icon: "admin", active: activeSection === "config", onClick: () => handleSectionChange("config") },
+            { key: "instructions", label: "Agent Instructions", icon: "reviewer", active: activeSection === "instructions", onClick: () => handleSectionChange("instructions") },
+            { key: "audit", label: "Audit Log", icon: "activity", active: activeSection === "audit", onClick: () => handleSectionChange("audit"), badge: audit.length },
+            { key: "logs", label: "Logs & Audit Trail", icon: "jobs", active: activeSection === "logs", onClick: () => handleSectionChange("logs") }
+          ]
+        },
         { key: "analytics", label: "Analytics", icon: "analytics", href: "/analytics" }
       ]}
     >
       <div className="dashboard-shell regai-wrap admin-shell">
-      <section className="admin-command-grid">
-        <section className="panel admin-hero-panel">
-          <div className="admin-hero-panel__title-row">
-            <div className="admin-hero-panel__title">Administration Workspace</div>
-            <span className="panel-badge badge-slate">Workspace: {projectLabel(projectId) || "Not set"}</span>
+      {activeSection === "config" && (
+        <section className="panel">
+          <div className="panel-header">
+            <div className="panel-title">Workspace Configuration</div>
+            <span className="panel-badge badge-slate">Admin Settings</span>
           </div>
-          <div className="admin-hero-panel__subtitle">
-            Manage workflow operations, stage gates, artifacts, and agent instructions from one place.
-          </div>
-          <div className="admin-hero-panel__signals">
-            <div className="admin-signal-card">
-              <span>Active workflows</span>
-              <strong>{activeWorkflowCount}</strong>
-            </div>
-            <div className="admin-signal-card">
-              <span>Artifacts</span>
-              <strong>{artifacts.filter((a) => !a.is_deleted).length}</strong>
-            </div>
-            <div className="admin-signal-card">
-              <span>Audit items</span>
-              <strong>{audit.length}</strong>
-            </div>
-          </div>
-        </section>
-        <section className="panel admin-config-panel admin-config-panel--compact">
           <div className="workflow-panel-eyebrow">Command Inputs</div>
           <div className="admin-controls">
             <select value={projectId} onChange={(e) => setProjectId(e.target.value)}>
@@ -188,60 +184,9 @@ export default function AdminPage() {
             </button>
           </div>
           {message && <div className="project-message">{message}</div>}
+          <div className="admin-meta">Configure your workspace settings, project ID, admin credentials, and actor name for administrative operations.</div>
         </section>
-      </section>
-
-      <nav className="admin-nav">
-        <button
-          className={`admin-nav-btn ${activeSection === "overview" ? "active" : ""}`}
-          onClick={() => handleSectionChange("overview")}
-        >
-          <ActionIcon name="analytics" className="action-icon" />
-          Overview
-        </button>
-        <button
-          className={`admin-nav-btn ${activeSection === "workflows" ? "active" : ""}`}
-          onClick={() => handleSectionChange("workflows")}
-        >
-          <ActionIcon name="workflow" className="action-icon" />
-          Workflows ({filteredWorkflows.length})
-        </button>
-        <button
-          className={`admin-nav-btn ${activeSection === "artifacts" ? "active" : ""}`}
-          onClick={() => handleSectionChange("artifacts")}
-        >
-          <ActionIcon name="artifacts" className="action-icon" />
-          Artifacts ({artifacts.length})
-        </button>
-        <button
-          className={`admin-nav-btn ${activeSection === "gates" ? "active" : ""}`}
-          onClick={() => handleSectionChange("gates")}
-        >
-          <ActionIcon name="admin" className="action-icon" />
-          Gate Configuration
-        </button>
-        <button
-          className={`admin-nav-btn ${activeSection === "instructions" ? "active" : ""}`}
-          onClick={() => handleSectionChange("instructions")}
-        >
-          <ActionIcon name="reviewer" className="action-icon" />
-          Agent Instructions
-        </button>
-        <button
-          className={`admin-nav-btn ${activeSection === "audit" ? "active" : ""}`}
-          onClick={() => handleSectionChange("audit")}
-        >
-          <ActionIcon name="activity" className="action-icon" />
-          Audit Log ({audit.length})
-        </button>
-        <button
-          className={`admin-nav-btn ${activeSection === "logs" ? "active" : ""}`}
-          onClick={() => handleSectionChange("logs")}
-        >
-          <ActionIcon name="jobs" className="action-icon" />
-          Logs & Audit Trail
-        </button>
-      </nav>
+      )}
 
       {activeSection === "overview" && (
         <div className="admin-overview">
@@ -280,7 +225,10 @@ export default function AdminPage() {
 
           <section className="panel">
             <div className="panel-header">
-              <div className="panel-title">Data Model Library</div>
+              <div>
+                <div className="panel-title">Data Model Library</div>
+                <div className="admin-meta">Only admin uploads and maintains data model artifacts used by BA and DEV workflows.</div>
+              </div>
               <span className="panel-badge badge-slate">{dataModelArtifacts.length}</span>
             </div>
             <div className="admin-controls">
@@ -289,12 +237,14 @@ export default function AdminPage() {
                 Upload Data Model
               </button>
             </div>
-            <div className="admin-meta">Only admin uploads and maintains data model artifacts used by BA and DEV workflows.</div>
           </section>
 
           <section className="panel">
             <div className="panel-header">
-              <div className="panel-title">Mapping Contract Library</div>
+              <div>
+                <div className="panel-title">Mapping Contract Library</div>
+                <div className="admin-meta">Admin uploads report-specific mapping contracts that DEV XML generation resolves by report code.</div>
+              </div>
               <span className="panel-badge badge-slate">{mappingContractArtifacts.length}</span>
             </div>
             <div className="admin-controls">
@@ -303,12 +253,14 @@ export default function AdminPage() {
                 Upload Mapping Contract
               </button>
             </div>
-            <div className="admin-meta">Admin uploads report-specific mapping contracts that DEV XML generation resolves by report code.</div>
           </section>
 
           <section className="panel">
             <div className="panel-header">
-              <div className="panel-title">XSD Schema Library</div>
+              <div>
+                <div className="panel-title">XSD Schema Library</div>
+                <div className="admin-meta">Admin uploads XSD schemas used for XML package preparation in the Developer stage.</div>
+              </div>
               <span className="panel-badge badge-slate">{xsdArtifacts.length}</span>
             </div>
             <div className="admin-controls">
@@ -317,7 +269,6 @@ export default function AdminPage() {
                 Upload XSD Schema
               </button>
             </div>
-            <div className="admin-meta">Admin uploads XSD schemas used for XML package preparation in the Developer stage.</div>
           </section>
 
           <section className="panel">

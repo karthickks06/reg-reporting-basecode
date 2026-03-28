@@ -24,7 +24,8 @@ type ActionIconName =
   | "notifications"
   | "sun"
   | "moon"
-  | "system";
+  | "system"
+  | "chevron-down";
 
 type ActionIconProps = {
   name: ActionIconName;
@@ -244,6 +245,13 @@ export function ActionIcon({ name, className }: ActionIconProps) {
       <svg className={className} viewBox="0 0 16 16" aria-hidden="true">
         <rect x="2" y="3" width="12" height="8.5" rx="1.6" />
         <path d="M5.25 13.25h5.5M8 11.5v1.75" />
+      </svg>
+    );
+  }
+  if (name === "chevron-down") {
+    return (
+      <svg className={className} viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M4 6 8 10 12 6" />
       </svg>
     );
   }

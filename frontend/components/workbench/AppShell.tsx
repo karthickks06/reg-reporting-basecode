@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { ActionIcon } from "./ActionIcon";
 import { projectOptionsWithCurrent } from "./projectOptions";
-type AppNavIconName = "home" | "jobs" | "admin" | "analytics" | "workflow";
+type AppNavIconName = "home" | "jobs" | "admin" | "analytics" | "workflow" | "artifacts" | "reviewer" | "activity";
 
 type AppNavItem = {
   key: string;
@@ -14,6 +14,7 @@ type AppNavItem = {
   onClick?: () => void;
   active?: boolean;
   badge?: string | number | null;
+  subItems?: AppNavItem[];
 };
 
 type AppShellProps = {
@@ -54,6 +55,7 @@ export function AppShell({
   children
 }: AppShellProps) {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [expandedNav, setExpandedNav] = useState<string | null>(null);
   const projectOptions = projectOptionsWithCurrent(projectId);
 
   useEffect(() => {
@@ -90,6 +92,10 @@ export function AppShell({
 
         <nav className="p-3 space-y-1" aria-label="Primary">
           {navItems.map((item) => {
+            const hasSubItems = item.subItems && item.subItems.length > 0;
+            const isExpanded = expandedNav === item.key;
+            const hasActiveSubItem = hasSubItems && item.subItems?.some(sub => sub.active);
+
             const content = (
               <>
                 <span className="flex items-center gap-3 flex-1">
@@ -101,39 +107,109 @@ export function AppShell({
                     {item.badge}
                   </span>
                 )}
+                {hasSubItems && (
+                  <ActionIcon 
+                    name="chevron-down" 
+                    className={`action-icon w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                  />
+                )}
               </>
             );
 
             const baseClasses = `flex items-center justify-between gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
-              item.active 
+              item.active || hasActiveSubItem
                 ? "bg-primary text-primary-foreground shadow-md font-semibold" 
                 : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             }`;
 
-            if (item.href) {
-              return (
-                <a
-                  key={item.key}
-                  className={baseClasses}
-                  href={item.href}
-                  aria-current={item.active ? "page" : undefined}
-                >
-                  {content}
-                </a>
-              );
-            }
+            const handleClick = () => {
+              if (hasSubItems) {
+                setExpandedNav(isExpanded ? null : item.key);
+              }
+              if (item.onClick) {
+                item.onClick();
+              }
+            };
 
             return (
-              <button
-                key={item.key}
-                className={`${baseClasses} text-left w-full`}
-                onClick={item.onClick}
-                type="button"
-                disabled={!item.onClick}
-                aria-pressed={item.active ? "true" : "false"}
-              >
-                {content}
-              </button>
+              <div key={item.key}>
+                {item.href ? (
+                  <a
+                    className={baseClasses}
+                    href={item.href}
+                    aria-current={item.active ? "page" : undefined}
+                    onClick={(e) => {
+                      if (hasSubItems) {
+                        e.preventDefault();
+                        handleClick();
+                      }
+                    }}
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <button
+                    className={`${baseClasses} text-left w-full`}
+                    onClick={handleClick}
+                    type="button"
+                    aria-pressed={item.active ? "true" : "false"}
+                  >
+                    {content}
+                  </button>
+                )}
+
+                {hasSubItems && isExpanded && (
+                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-border pl-2">
+                    {item.subItems?.map((subItem) => {
+                      const subContent = (
+                        <>
+                          <span className="flex items-center gap-2 flex-1">
+                            {subItem.icon ? <ActionIcon name={subItem.icon} className="action-icon w-4 h-4" /> : null}
+                            <span className="text-sm font-medium">{subItem.label}</span>
+                          </span>
+                          {subItem.badge !== undefined && subItem.badge !== null && (
+                            <span className="px-1.5 py-0.5 text-xs font-bold rounded-full bg-primary text-primary-foreground">
+                              {subItem.badge}
+                            </span>
+                          )}
+                        </>
+                      );
+
+                      const subBaseClasses = `flex items-center justify-between gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                        subItem.active
+                          ? "bg-accent text-accent-foreground font-semibold" 
+                          : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+                      }`;
+
+                      if (subItem.href) {
+                        return (
+                          <a
+                            key={subItem.key}
+                            className={subBaseClasses}
+                            href={subItem.href}
+                            aria-current={subItem.active ? "page" : undefined}
+                          >
+                            {subContent}
+                          </a>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={subItem.key}
+                          className={`${subBaseClasses} text-left w-full`}
+                          onClick={subItem.onClick}
+                          type="button"
+                          disabled={!subItem.onClick}
+                          aria-pressed={subItem.active ? "true" : "false"}
+                        >
+                          {subContent}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
