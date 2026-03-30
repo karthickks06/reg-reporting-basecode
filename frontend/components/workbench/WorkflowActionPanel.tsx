@@ -201,6 +201,26 @@ export function WorkflowActionPanel({
     <section className="panel workflow-action-panel work-stage-panel">
       {activeAgentTab === "ba" ? (
         <>
+          <div className="workflow-action-stage-transition">
+            <div className="workflow-action-hero__summary">
+              <div className="workflow-action-bar__eyebrow">Stage Transition</div>
+              <div className="workflow-action-bar__title">{primaryActionLabel}</div>
+              <div className="workflow-action-hero__meta">
+                <span>{stage || "-"} to {nextStage}</span>
+                <span>{statusSummary}</span>
+              </div>
+              <div className="workflow-action-bar__chips">
+                <span className={`workflow-action-chip ${submitWithWarnings ? "warn" : gatePassed ? "good" : "warn"}`}>
+                  {submitWithWarnings ? "Submit with warnings" : gatePassed ? "Gate passed" : "Gate blocked"}
+                </span>
+                <span className="workflow-action-chip">{ownershipLabel}</span>
+                {openIssuesCount > 0 && <span className="workflow-action-chip warn">{openIssuesCount} open</span>}
+                {submitWithWarnings && <span className="workflow-action-chip warn">{baWarningCount} unresolved</span>}
+                {degraded && <span className="workflow-action-chip warn">Degraded quality</span>}
+              </div>
+            </div>
+          </div>
+
           <div className="workflow-action-split-layout">
             <div className="workflow-action-split-left">
               <details className="workflow-action-section" open={openRequiredActions}>
@@ -335,26 +355,6 @@ export function WorkflowActionPanel({
                     Artifacts
                   </button>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="workflow-action-stage-transition">
-            <div className="workflow-action-hero__summary">
-              <div className="workflow-action-bar__eyebrow">Stage Transition</div>
-              <div className="workflow-action-bar__title">{primaryActionLabel}</div>
-              <div className="workflow-action-hero__meta">
-                <span>{stage || "-"} to {nextStage}</span>
-                <span>{statusSummary}</span>
-              </div>
-              <div className="workflow-action-bar__chips">
-                <span className={`workflow-action-chip ${submitWithWarnings ? "warn" : gatePassed ? "good" : "warn"}`}>
-                  {submitWithWarnings ? "Submit with warnings" : gatePassed ? "Gate passed" : "Gate blocked"}
-                </span>
-                <span className="workflow-action-chip">{ownershipLabel}</span>
-                {openIssuesCount > 0 && <span className="workflow-action-chip warn">{openIssuesCount} open</span>}
-                {submitWithWarnings && <span className="workflow-action-chip warn">{baWarningCount} unresolved</span>}
-                {degraded && <span className="workflow-action-chip warn">Degraded quality</span>}
               </div>
             </div>
           </div>

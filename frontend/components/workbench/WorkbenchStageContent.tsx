@@ -103,8 +103,8 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
         </div>
       </section>
 
-      <section className={`main-grid ${state.activeAgentTab === "ba" ? "main-grid-ba" : ""}`}>
-        <div>
+      <section className="stage-content-two-column">
+        <div className="stage-content-left">
           {state.activeAgentTab === "ba" && (
             <BATabWithJobs
               busy={state.busy}
@@ -227,7 +227,8 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
           )}
         </div>
 
-        <WorkbenchInsights
+        <div className="stage-content-right">
+          <WorkbenchInsights
           activeWorkflowId={state.activeWorkflowId}
           activeAgentTab={state.activeAgentTab}
           baMode={state.baMode}
@@ -302,7 +303,8 @@ export function WorkbenchStageContent({ state, actions, derived, currentWorkflow
               returnToHome={() => state.setActiveWorkflowId(null)}
             />
           }
-        />
+          />
+        </div>
       </section>
     </>
   );
