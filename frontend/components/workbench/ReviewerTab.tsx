@@ -87,7 +87,7 @@ export function ReviewerTab({
   const showStep3 = showStep2;
 
   return (
-    <section className="panel agent-panel-full work-stage-panel">
+    <section className="panel agent-panel-full work-stage-panel revtab">
       <section className="stage-persona-hero stage-persona-hero--review">
         <div className="stage-persona-hero__copy">
           <div className="workflow-panel-eyebrow">Reviewer Stage</div>
@@ -116,8 +116,22 @@ export function ReviewerTab({
       </section>
       {readOnly && <p className="stage-note">This workflow is no longer assigned to Reviewer. Reviewer actions are locked.</p>}
 
-      <div className="stage-step">
+      <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
         <div className="step-title">Step 1 - Validation Inputs</div>
+        <div className="workflow-transition-brief">
+          <div className="workflow-transition-brief__item">
+            <span>XML</span>
+            <strong>{reportXmlArtifactName || "Missing"}</strong>
+          </div>
+          <div className="workflow-transition-brief__item">
+            <span>Review bundle</span>
+            <strong>{step1Complete ? "Ready" : "Select all required artifacts"}</strong>
+          </div>
+          <div className="workflow-transition-brief__item">
+            <span>Functional spec</span>
+            <strong>{functionalSpecName || "Missing"}</strong>
+          </div>
+        </div>
         <div className="form-grid form-grid-two">
           <div className="field">
             <label>Submission XML Instance</label>
@@ -179,29 +193,15 @@ export function ReviewerTab({
             </select>
           </div>
         </div>
-        <div className="workflow-transition-brief">
-          <div className="workflow-transition-brief__item">
-            <span>XML</span>
-            <strong>{reportXmlArtifactName || "Missing"}</strong>
-          </div>
-          <div className="workflow-transition-brief__item">
-            <span>Review bundle</span>
-            <strong>{step1Complete ? "Ready" : "Select all required artifacts"}</strong>
-          </div>
-          <div className="workflow-transition-brief__item">
-            <span>Functional spec</span>
-            <strong>{functionalSpecName || "Missing"}</strong>
-          </div>
-        </div>
       </div>
 
       {showStep2 ? (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 2 - Review Guidance</div>
           <details className="advanced-block">
             <summary>Upload XSD (optional)</summary>
             <div className="upload-pair-grid">
-              <div className="upload-pair">
+              <div className="upload-pair" style={{ borderRadius: "1rem" }}>
                 <FileUploadZone
                   label="Upload XSD"
                   description="Validation schema"
@@ -242,7 +242,7 @@ export function ReviewerTab({
           <div className="stage-note">Set review guidance before launching the AI-assisted XML validation pass.</div>
         </div>
       ) : (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 2 - Review Guidance</div>
           <div className="project-message">
             Complete Step 1 by selecting the XML, XSD, PSD, source data, and data model inputs to unlock reviewer guidance.
@@ -251,7 +251,7 @@ export function ReviewerTab({
       )}
 
       {showStep3 ? (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 3 - Run Validation</div>
           <div className="stage-actions-row">
             <button className="invoke-btn btn-with-icon" onClick={runXmlValidation} disabled={busy || !revReady || readOnly}>
@@ -275,7 +275,7 @@ export function ReviewerTab({
           <p className="stage-note">Validation uses XML, XSD, PSD, source data, data model, and the saved functional specification to assess coverage and output quality.</p>
         </div>
       ) : (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 3 - Run Validation</div>
           <div className="project-message">
             Complete Step 2 first. Validation becomes available after the reviewer inputs and guidance are ready.
@@ -310,7 +310,7 @@ export function ReviewerTab({
         </div>
       </section>
 
-      <div className="stage-step">
+      <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
         <div className="step-title">Complete Workflow</div>
         <div className="workflow-transition-brief">
           <div className="workflow-transition-brief__item">

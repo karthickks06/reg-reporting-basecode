@@ -118,7 +118,7 @@ export function DeveloperTab({
   };
 
   return (
-    <section className="panel agent-panel-full work-stage-panel">
+    <section className="panel agent-panel-full work-stage-panel devtab">
       <section className="stage-persona-hero stage-persona-hero--dev">
         <div className="stage-persona-hero__copy">
           <div className="workflow-panel-eyebrow">Developer Stage</div>
@@ -147,7 +147,7 @@ export function DeveloperTab({
       </section>
       {readOnly && <p className="stage-note">This workflow is no longer assigned to DEV. Developer actions are locked.</p>}
       {showRunningLock && (
-        <div className="job-inline-alert warn">
+        <div className="job-inline-alert warn" style={{ borderRadius: "1rem" }}>
           <span className="job-inline-alert__icon">!</span>
           <div>
             <strong>{activeJobLabel} is {activeBackgroundJob?.status === "pending" ? "queued" : "running"}</strong>
@@ -158,7 +158,7 @@ export function DeveloperTab({
         </div>
       )}
       {xmlReady && (
-        <div className="job-inline-alert success">
+        <div className="job-inline-alert success" style={{ borderRadius: "1rem" }}>
           <span className="job-inline-alert__icon">OK</span>
           <div>
             <strong>Submission XML generated and linked</strong>
@@ -170,9 +170,23 @@ export function DeveloperTab({
         </div>
       )}
 
-      <div className={`stage-lock-shell ${showRunningLock ? "locked" : ""}`} onClickCapture={notifyLockedInteraction}>
-      <div className="stage-step">
+      <div className={`stage-lock-shell ${showRunningLock ? "locked" : ""}`} onClickCapture={notifyLockedInteraction} style={{ borderRadius: "1.25rem" }}>
+      <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
         <div className="step-title">Step 1 - Approved Inputs</div>
+        <div className="workflow-transition-brief">
+          <div className="workflow-transition-brief__item">
+            <span>Gap run</span>
+            <strong>{gapRunId ? `Run ${gapRunId}` : "-"}</strong>
+          </div>
+          <div className="workflow-transition-brief__item">
+            <span>PSD</span>
+            <strong>{fcaArtifactName || "Missing"}</strong>
+          </div>
+          <div className="workflow-transition-brief__item">
+            <span>Model</span>
+            <strong>{modelArtifactName || "Missing"}</strong>
+          </div>
+        </div>
         <div className="form-grid form-grid-two">
           <div className="field">
             <label>Approved Mapping Specification</label>
@@ -191,24 +205,10 @@ export function DeveloperTab({
             </select>
           </div>
         </div>
-        <div className="workflow-transition-brief">
-          <div className="workflow-transition-brief__item">
-            <span>Gap run</span>
-            <strong>{gapRunId ? `Run ${gapRunId}` : "-"}</strong>
-          </div>
-          <div className="workflow-transition-brief__item">
-            <span>PSD</span>
-            <strong>{fcaArtifactName || "Missing"}</strong>
-          </div>
-          <div className="workflow-transition-brief__item">
-            <span>Model</span>
-            <strong>{modelArtifactName || "Missing"}</strong>
-          </div>
-        </div>
       </div>
 
       {showStep2 ? (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 2 - Generate SQL</div>
           <div className="form-grid form-grid-two">
             <div className="field">
@@ -233,7 +233,7 @@ export function DeveloperTab({
           <p className="stage-note">Generate SQL first, validate it manually in the database, then use the result set to prepare the XML package.</p>
         </div>
       ) : (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 2 - Generate SQL</div>
           <div className="project-message">
             Complete Step 1 by confirming the approved mapping specification and linked data model to unlock SQL generation.
@@ -242,7 +242,7 @@ export function DeveloperTab({
       )}
 
       {showStep3 ? (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 3 - Prepare XML Package</div>
           <div className="form-grid form-grid-two">
             <div className="field">
@@ -271,7 +271,7 @@ export function DeveloperTab({
           <details className="advanced-block" open={!dataArtifactId}>
             <summary>Upload CSV data (optional)</summary>
             <div className="upload-pair-grid">
-              <div className="upload-pair">
+              <div className="upload-pair" style={{ borderRadius: "1rem" }}>
                 <FileUploadZone
                   label="Upload CSV Data"
                   description="Query output or extracted report rows"
@@ -319,7 +319,7 @@ export function DeveloperTab({
           </p>
         </div>
       ) : (
-        <div className="stage-step">
+        <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
           <div className="step-title">Step 3 - Prepare XML Package</div>
           <div className="project-message">
             Generate SQL first. Step 3 appears after a SQL run is available for this workflow.
@@ -355,7 +355,7 @@ export function DeveloperTab({
         </div>
       </section>
 
-      <div className="stage-step">
+      <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
         <div className="step-title">Submit XML Package</div>
         <div className="workflow-transition-brief">
           <div className="workflow-transition-brief__item">

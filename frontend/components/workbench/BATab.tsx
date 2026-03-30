@@ -136,20 +136,36 @@ export function BATab({
     addToast?.("error", `${activeJobLabel} is ${activeBackgroundJob?.status === "pending" ? "queued" : "running"} for this workflow. ${activeJobDetail}`);
   };
   return (
-    <section className="panel agent-panel-full work-stage-panel">
-      <div className="agent-head">
-        <div className="agent-head__copy">
-          <div className="agent-head__eyebrow">Workspace</div>
-          <h2>Business Analyst Workspace</h2>
-          <p className="agent-head__subtitle">Prepare inputs, set guidance, and launch mapping from one place.</p>
+    <section className="panel agent-panel-full work-stage-panel batab">
+      <section className="stage-persona-hero">
+        <div className="stage-persona-hero__copy">
+          <div className="workflow-panel-eyebrow">Business Analyst Stage</div>
+          <h3>Prepare inputs, set guidance, and launch mapping</h3>
+          <p>Configure PSD documents, data models, and analysis parameters to generate requirement-to-data mappings with AI assistance.</p>
         </div>
-        <StatusBadge className="agent-head__status" status={workspaceStatus} size="lg">
-          {workspaceStatusLabel}
-        </StatusBadge>
-      </div>
-      {isReadOnly && <p className="stage-note">This workflow is assigned to another stage owner. BA inputs are read-only.</p>}
+        <div className="stage-persona-hero__status">
+          <StatusBadge status={workspaceStatus} size="lg">
+            {workspaceStatusLabel}
+          </StatusBadge>
+        </div>
+        <div className="stage-persona-hero__signals">
+          <div className="stage-persona-signal">
+            <span>Mode</span>
+            <strong>{baMode === "psd_model" ? "PSD vs Model" : "PSD vs PSD"}</strong>
+          </div>
+          <div className="stage-persona-signal">
+            <span>Gap Analysis</span>
+            <strong>{gapRunId ? `Run #${gapRunId}` : "Not started"}</strong>
+          </div>
+          <div className="stage-persona-signal">
+            <span>Unresolved</span>
+            <strong>{unresolvedRows.length > 0 ? `${unresolvedRows.length} items` : "All clear"}</strong>
+          </div>
+        </div>
+      </section>
+      {isReadOnly && <p className="stage-note" style={{ marginTop: "0.85rem" }}>This workflow is assigned to another stage owner. BA inputs are read-only.</p>}
       {showRunningLock && (
-        <div className="job-inline-alert warn">
+        <div className="job-inline-alert warn" style={{ marginTop: "0.85rem", borderRadius: "1rem" }}>
           <span className="job-inline-alert__icon">!</span>
           <div>
             <strong>{activeJobLabel} is {activeBackgroundJob?.status === "pending" ? "queued" : "running"}</strong>
@@ -159,13 +175,8 @@ export function BATab({
           </div>
         </div>
       )}
-      <div className={`stage-lock-shell ${showRunningLock ? "locked" : ""}`}>
-        <div className="stage-topbar">
-          <div className="stage-quick-stats">
-            <span className="panel-badge badge-slate">Mode: {baMode === "psd_model" ? "PSD vs Model" : "PSD vs PSD"}</span>
-            <span className="panel-badge badge-slate">Gap Run: {gapRunId || "-"}</span>
-            <span className={`panel-badge ${unresolvedRows.length > 0 ? "badge-amber" : "badge-teal"}`}>Unresolved: {unresolvedRows.length}</span>
-          </div>
+      <div className={`stage-lock-shell ${showRunningLock ? "locked" : ""}`} style={{ marginTop: "0.85rem", borderRadius: "1.25rem" }}>
+        <div className="stage-topbar" style={{ borderRadius: "1.15rem" }}>
           <div className="mode-switch">
             <button className={`mode-btn ${baMode === "psd_model" ? "active" : ""}`} onClick={() => setBaMode("psd_model")} disabled={formBusy}>
               PSD vs Data Model
@@ -178,7 +189,7 @@ export function BATab({
 
         {baMode === "psd_model" ? (
           <>
-            <div className="stage-step">
+            <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
               <div className="step-title">Step 1 - Required Inputs</div>
               <div className="form-grid form-grid-two">
                 <div className="field">
@@ -212,7 +223,7 @@ export function BATab({
               <p className="stage-note">Data models are managed in Admin Console.</p>
             </div>
 
-            <div className="stage-step">
+            <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
               <div className="step-title">Step 2 - Guidance (Optional)</div>
               <div className="form-grid form-grid-two">
                 <div className="field">
@@ -231,7 +242,7 @@ export function BATab({
               </div>
             </div>
 
-            <div className="stage-step">
+            <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
               <div className="step-title">Step 3 - Run Requirement-to-Data Mapping</div>
               <div className="stage-actions-row">
                 <button className="invoke-btn" onClick={runGap} disabled={actionBusy || !baReady}>
@@ -252,7 +263,7 @@ export function BATab({
           </>
         ) : (
           <>
-            <div className="stage-step">
+            <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
               <div className="step-title">Step 1 - Select PSD Versions</div>
               <div className="form-grid form-grid-two">
                 <div className="field">
@@ -280,7 +291,7 @@ export function BATab({
               </div>
             </div>
 
-            <div className="stage-step">
+            <div className="stage-step" style={{ borderRadius: "1.15rem" }}>
               <div className="step-title">Step 2 - Compare For Reuse</div>
               <div className="stage-actions-row">
                 <button className="invoke-btn" onClick={runCompare} disabled={actionBusy || compareBusy || !compareReady}>
@@ -310,10 +321,10 @@ export function BATab({
 
       {showUploadModal && (
         <div className="modal-overlay">
-          <div className="panel modal-panel submit-modal-panel stage-modal">
+          <div className="panel modal-panel submit-modal-panel stage-modal" style={{ borderRadius: "1.3rem" }}>
             <div className="submit-confirm-title">Upload PSD Document</div>
             <div className="upload-pair-grid">
-              <div className="upload-pair">
+              <div className="upload-pair" style={{ borderRadius: "1rem" }}>
                 <FileUploadZone
                   label="Upload PSD"
                   description="Regulatory source document"
@@ -347,7 +358,7 @@ export function BATab({
 
       {showRemediationModal && (
         <div className="modal-overlay">
-          <div className="panel modal-panel submit-modal-panel stage-modal">
+          <div className="panel modal-panel submit-modal-panel stage-modal" style={{ borderRadius: "1.3rem" }}>
             <div className="submit-confirm-title">Remediation Studio</div>
             <div className="remediation-headline">
               <span>Latest Run: {gapRunId || "-"}</span>
@@ -357,7 +368,7 @@ export function BATab({
               </span>
             </div>
             <div className="remediation-grid">
-              <div className="field remediation-card">
+              <div className="field remediation-card" style={{ borderRadius: "1.1rem" }}>
                 <label>Target statuses</label>
                 <p className="remediation-card__hint">Choose which unresolved rows should be reconsidered in this pass.</p>
                 <div className="remediation-checks">
@@ -381,7 +392,7 @@ export function BATab({
                   </label>
                 </div>
               </div>
-              <div className="field remediation-card">
+              <div className="field remediation-card" style={{ borderRadius: "1.1rem" }}>
                 <label>Supplemental artifacts (optional)</label>
                 <p className="remediation-card__hint">Add supporting documents if the primary PSD and data model need extra context.</p>
                 <div className="remediation-artifact-list">
@@ -398,7 +409,7 @@ export function BATab({
                   ))}
                 </div>
               </div>
-              <div className="field context-field remediation-card remediation-card--wide">
+              <div className="field context-field remediation-card remediation-card--wide" style={{ borderRadius: "1.1rem" }}>
                 <label>Remediation guidance</label>
                 <p className="remediation-card__hint">Give the agent a precise instruction about how to resolve the selected rows.</p>
                 <textarea
