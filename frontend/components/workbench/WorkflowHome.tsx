@@ -114,7 +114,6 @@ export function WorkflowHome({
 
   function renderWorkflowCard(wf: WorkflowItem) {
     const workflowDisplayId = wf.display_id || `WF-${String(wf.id).padStart(6, "0")}`;
-    const pendingOwner = wf.status === "in_progress" && wf.current_stage !== "COMPLETED" ? wf.current_stage : "None";
     const statusBucket = workflowStatusBucket(wf);
     const statusVariant = statusBucket === "ready" ? "default" : statusBucket === "blocked" ? "destructive" : "secondary";
     const statusText = statusBucket === "ready" ? "Ready" : statusBucket === "blocked" ? "Blocked" : "Completed";
@@ -123,80 +122,86 @@ export function WorkflowHome({
     return (
       <Card 
         key={wf.id} 
-        className={`group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 rounded-2xl border-2 overflow-hidden ${
+        className={`group transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 rounded-xl border overflow-hidden ${
           wf.pending_for_me 
             ? "border-amber-400 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 shadow-amber-200/50 dark:shadow-amber-900/30" 
             : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/50"
         }`}
-        style={{ backdropFilter: 'blur(8px)' }}
       >
-        <CardHeader className="pb-4 bg-gradient-to-r from-slate-50/80 to-transparent dark:from-slate-800/40 dark:to-transparent">
-          <div className="flex items-start justify-between gap-3">
-            <CardTitle className="flex items-center gap-3 text-lg">
-              {runningJobs.length > 0 ? (
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500 shadow-lg shadow-blue-500/50" title={`${runningJobs.length} background job running`}></span>
-                </span>
-              ) : null}
-              <span className="font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">{wf.name}</span>
-            </CardTitle>
-            <div className="flex gap-2 flex-wrap justify-end">
-              {runningJobs.length > 0 && (
-                <Badge variant="outline" className="rounded-full bg-blue-50 text-blue-700 border-blue-300 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-700 shadow-sm">
-                  Running
-                </Badge>
-              )}
-              <Badge variant={statusVariant} className="rounded-full shadow-sm">{statusText}</Badge>
-            </div>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="space-y-5 pt-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              { label: "Workflow ID", value: workflowDisplayId },
-              { label: "Stage", value: wf.current_stage },
-              { label: "Status", value: wf.status === "in_progress" ? "In Progress" : wf.status },
-              { label: "Pending Owner", value: pendingOwner },
-              { label: "PSD", value: wf.psd_version || "-" },
-              { label: "Updated", value: wf.updated_at ? new Date(wf.updated_at).toLocaleString("en-GB") : "-" }
-            ].map((item, idx) => (
-              <div key={idx} className="space-y-1.5 p-3 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-700/50 transition-colors hover:bg-slate-100/70 dark:hover:bg-slate-800/60">
-                <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">{item.label}</p>
-                <p className="font-bold text-sm text-slate-900 dark:text-slate-100">{item.value}</p>
+        <CardContent className="p-6 space-y-4">
+          {/* Workflow Name and Action Buttons */}
+          <div className="space-y-2">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1">
+                {runningJobs.length > 0 && (
+                  <span className="relative flex h-2.5 w-2.5 mt-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500 shadow-lg shadow-blue-500/50" title={`${runningJobs.length} background job running`}></span>
+                  </span>
+                )}
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight">{wf.name}</h3>
               </div>
-            ))}
+              {/* Action Buttons - Aligned with workflow name */}
+              <div className="flex gap-2 shrink-0">
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  className="gap-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200" 
+                  onClick={() => openWorkflow(wf)}
+                >
+                  <ActionIcon name="open" className="action-icon h-4 w-4" />
+                  Open Workflow
+                </Button>
+                {persona === "BA" && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="gap-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200" 
+                    onClick={() => setVersionWorkflow(wf)} 
+                    disabled={workflowBusy}
+                  >
+                    <ActionIcon name="add" className="action-icon h-4 w-4" />
+                    New Version
+                  </Button>
+                )}
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground font-mono">{workflowDisplayId}</p>
           </div>
-          
-          {!!wf.quality_summary?.exit_gate_status?.message && (
-            <div className="rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/5 p-4 text-sm border-l-4 border-primary shadow-sm">
-              <p className="text-slate-700 dark:text-slate-300">{wf.quality_summary.exit_gate_status.message}</p>
+
+          {/* Tags: Stage and Status */}
+          <div className="flex gap-2 flex-wrap">
+            <Badge variant="outline" className="rounded-md">
+              {wf.current_stage}
+            </Badge>
+            <Badge variant={statusVariant} className="rounded-md">
+              {statusText}
+            </Badge>
+            {runningJobs.length > 0 && (
+              <Badge variant="outline" className="rounded-md bg-blue-50 text-blue-700 border-blue-300 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-700">
+                Running
+              </Badge>
+            )}
+          </div>
+
+          {/* PSD Version/Documents */}
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground font-medium">PSD Version:</span>
+            <span className="font-semibold text-slate-900 dark:text-slate-100">{wf.psd_version || "Not specified"}</span>
+          </div>
+
+          {/* Blocker Message - only shown when blocked */}
+          {statusBucket === "blocked" && wf.quality_summary?.exit_gate_status?.message && (
+            <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-3 text-sm border-l-3 border-red-500">
+              <p className="text-red-800 dark:text-red-300">{wf.quality_summary.exit_gate_status.message}</p>
             </div>
           )}
+
+          {/* Metadata: Updated timestamp */}
+          <div className="text-xs text-muted-foreground pt-2 border-t border-slate-200 dark:border-slate-700">
+            Last updated: {wf.updated_at ? new Date(wf.updated_at).toLocaleString("en-GB") : "Unknown"}
+          </div>
         </CardContent>
-        
-        <CardFooter className="flex gap-3 pt-4 pb-5 bg-slate-50/30 dark:bg-slate-900/30">
-          <Button 
-            variant="default" 
-            className="flex-1 gap-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 font-semibold" 
-            onClick={() => openWorkflow(wf)}
-          >
-            <ActionIcon name="open" className="action-icon h-4 w-4" />
-            Open Workflow
-          </Button>
-          {persona === "BA" && (
-            <Button 
-              variant="outline" 
-              className="gap-2 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 font-semibold border-2" 
-              onClick={() => setVersionWorkflow(wf)} 
-              disabled={workflowBusy}
-            >
-              <ActionIcon name="add" className="action-icon h-4 w-4" />
-              New Version
-            </Button>
-          )}
-        </CardFooter>
       </Card>
     );
   }
