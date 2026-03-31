@@ -75,15 +75,15 @@
   --text-muted: #4f6288;
   --line: rgba(100, 126, 175, 0.3);
   --line-strong: rgba(100, 126, 175, 0.42);
-  --accent: #0fb9ae;
-  --accent-strong: #0a8f87;
-  --ok: #0fb9ae;
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --ok: #2563eb;
   --warn: #d97706;
   --bad: #e11d48;
-  --hero-card-start: #e8f7f6;
-  --hero-card-end: #d9f2ef;
-  --hero-card-border: rgba(15, 185, 174, 0.18);
-  --hero-card-text: #174b57;
+  --hero-card-start: #dbeafe;
+  --hero-card-end: #bfdbfe;
+  --hero-card-border: rgba(37, 99, 235, 0.22);
+  --hero-card-text: #1e3a8a;
   --loading-start: #f2f7ff;
   --loading-mid: #eaf1ff;
   --loading-end: #dde8ff;
@@ -157,8 +157,8 @@ body::after {
 
 :root[data-theme="light"] body::before {
   background:
-    radial-gradient(ellipse at 72% -10%, rgba(15, 185, 174, 0.12), transparent 58%),
-    radial-gradient(ellipse at -8% 104%, rgba(79, 70, 229, 0.05), transparent 56%);
+    radial-gradient(ellipse at 72% -10%, rgba(37, 99, 235, 0.12), transparent 58%),
+    radial-gradient(ellipse at -8% 104%, rgba(59, 130, 246, 0.08), transparent 56%);
 }
 
 :root[data-theme="light"] body::after {

@@ -220,7 +220,7 @@ export function AppShell({
       </aside>
 
       <div className="flex-1 flex flex-col gap-4 min-w-0">
-        <header className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+        <header className="bg-gradient-to-br from-blue-950/20 via-card to-card rounded-xl shadow-lg border border-border overflow-hidden">
           <div className="p-4 lg:p-6">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
@@ -230,7 +230,7 @@ export function AppShell({
                       className="flex items-center justify-center p-2 rounded-lg border border-border bg-background hover:bg-accent transition-colors" 
                       onClick={onBack} 
                       type="button"
-                      aria-label={backLabel || "Go back"}
+                      aria-label={backLabel || "Back to Role Select"}
                     >
                       <ActionIcon name="back" className="action-icon w-5 h-5" />
                     </button>
@@ -238,45 +238,45 @@ export function AppShell({
                 </div>
 
                 <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:ml-auto">
-                <div className="flex flex-wrap items-center gap-2">
-                  {projectId && setProjectId ? (
-                    <label className="flex items-center gap-2 text-sm font-medium">
-                      <span className="text-muted-foreground whitespace-nowrap">Workspace</span>
-                      <select 
-                        className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-accent transition-colors text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary" 
-                        value={projectId} 
-                        onChange={(e) => setProjectId(e.target.value)}
-                      >
-                        {projectOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  ) : null}
-                </div>
-
-                {(backendUp !== undefined && backendUp !== null) || (llmUp !== undefined && llmUp !== null) ? (
                   <div className="flex flex-wrap items-center gap-2">
-                    {backendUp !== undefined && backendUp !== null ? (
-                      <span className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${
-                        backendUp ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                      }`}>
-                        <ActionIcon name="system" className="action-icon w-3.5 h-3.5" />
-                        {backendUp ? "System Up" : "System Down"}
-                      </span>
-                    ) : null}
-                    {llmUp !== undefined && llmUp !== null ? (
-                      <span className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${
-                        llmUp ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                      }`}>
-                        <ActionIcon name="bot" className="action-icon w-3.5 h-3.5" />
-                        {llmUp ? "Agent Online" : "Agent Offline"}
-                      </span>
+                    {projectId && setProjectId ? (
+                      <label className="flex items-center gap-2 text-sm font-medium">
+                        <span className="text-muted-foreground whitespace-nowrap">Workspace</span>
+                        <select 
+                          className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-accent transition-colors text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary" 
+                          value={projectId} 
+                          onChange={(e) => setProjectId(e.target.value)}
+                        >
+                          {projectOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
                     ) : null}
                   </div>
-                ) : null}
+
+                  {(backendUp !== undefined && backendUp !== null) || (llmUp !== undefined && llmUp !== null) ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {backendUp !== undefined && backendUp !== null ? (
+                        <span className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${
+                          backendUp ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                        }`}>
+                          <ActionIcon name="system" className="action-icon w-3.5 h-3.5" />
+                          {backendUp ? "System Up" : "System Down"}
+                        </span>
+                      ) : null}
+                      {llmUp !== undefined && llmUp !== null ? (
+                        <span className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${
+                          llmUp ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                        }`}>
+                          <ActionIcon name="bot" className="action-icon w-3.5 h-3.5" />
+                          {llmUp ? "Agent Online" : "Agent Offline"}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
 
                   <div className="flex items-center gap-2">
                     <details className="notification-center" open={notificationOpen}>
@@ -295,10 +295,11 @@ export function AppShell({
                           <div className="notification-center__header">
                             <div>
                               <h3 className="notification-center__title">Notifications</h3>
-                              <p className="notification-center__subtitle">You have 3 unread messages</p>
+                              <p className="notification-center__subtitle">Recent workflow, job, and action events stay here until you clear them.</p>
                             </div>
                             <div className="notification-center__actions">
                               <button className="mini-btn" type="button">Mark all read</button>
+                              <button className="mini-btn" type="button">Clear</button>
                             </div>
                           </div>
                           <div className="notification-center__list">
