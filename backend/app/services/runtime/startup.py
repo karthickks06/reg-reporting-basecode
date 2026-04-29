@@ -5,10 +5,11 @@ from pathlib import Path
 
 from app.config import settings
 from app.db import SessionLocal
-from app.services.runtime.probes import ensure_pgvector_extension, ensure_rag_chunk_embedding_column, ensure_schema_tables, probe_database
+from app.services.runtime.probes import ensure_schema_tables, probe_database
 from app.services.runtime.schema_patches import run_schema_patches
 from app.services.runtime.state import STARTUP_STATE, build_troubleshooting_steps, push_startup_step, reset_startup_state, utc_now_iso
 from app.services.vector_service import backfill_missing_embeddings
+from app.services.vector_store import probe_chroma
 
 logger = logging.getLogger(__name__)
 
@@ -36,17 +37,17 @@ def run_startup_sequence(data_root: Path, artifact_root: Path) -> None:
     push_startup_step("database-connectivity", "ok", "Database connection established.")
     logger.info("Startup step complete step=database-connectivity")
 
-    vector_status = ensure_pgvector_extension()
-    vector_step_status = "ok" if vector_status.get("installed") else "warn"
-    push_startup_step("pgvector", vector_step_status, vector_status.get("detail", "pgvector check completed."))
-    if vector_status.get("error"):
+    vector_status = probe_chroma()
+    vector_step_status = "ok" if vector_status.get("ok") else "warn"
+    push_startup_step("chroma", vector_step_status, vector_status.get("detail", "Chroma check completed."))
+    if vector_status.get("error") or not vector_status.get("ok"):
         logger.warning(
-            "Startup step warning step=pgvector error=%s troubleshooting=%s",
-            vector_status["error"],
-            " | ".join(vector_status.get("troubleshooting", build_troubleshooting_steps("pgvector"))),
+            "Startup step warning step=chroma error=%s troubleshooting=%s",
+            vector_status.get("error") or vector_status.get("detail"),
+            " | ".join(vector_status.get("troubleshooting", build_troubleshooting_steps("chroma"))),
         )
     else:
-        logger.info("Startup step complete step=pgvector installed=%s", vector_status.get("installed"))
+        logger.info("Startup step complete step=chroma ok=%s count=%s", vector_status.get("ok"), vector_status.get("count"))
 
     if settings.auto_create_schema:
         schema_status = ensure_schema_tables()
@@ -80,37 +81,19 @@ def run_startup_sequence(data_root: Path, artifact_root: Path) -> None:
         schema_patch_status.get("skipped", []),
     )
 
-    rag_vector_status = ensure_rag_chunk_embedding_column()
-    rag_vector_step_status = "ok" if rag_vector_status.get("aligned") else "warn"
-    push_startup_step("rag-embedding-schema", rag_vector_step_status, rag_vector_status.get("detail", "RAG embedding schema check completed."))
-    if rag_vector_status.get("error"):
-        logger.warning(
-            "Startup step warning step=rag-embedding-schema error=%s troubleshooting=%s",
-            rag_vector_status["error"],
-            " | ".join(rag_vector_status.get("troubleshooting", build_troubleshooting_steps("pgvector"))),
-        )
-    else:
-        logger.info("Startup step complete step=rag-embedding-schema aligned=%s", rag_vector_status.get("aligned"))
-
     if settings.auto_backfill_rag_embeddings:
         backfill_count = 0
         try:
             with SessionLocal() as db:
                 batch_size = int(settings.rag_embedding_backfill_batch_size or 2000)
-                while True:
-                    updated = backfill_missing_embeddings(db, batch_size=batch_size)
-                    if updated <= 0:
-                        break
-                    backfill_count += updated
-                if backfill_count:
-                    db.commit()
-            push_startup_step("rag-embedding-backfill", "ok", f"Backfilled {backfill_count} rag chunk embeddings.")
-            logger.info("Startup step complete step=rag-embedding-backfill rows=%s", backfill_count)
+                backfill_count = backfill_missing_embeddings(db, batch_size=batch_size)
+            push_startup_step("rag-vector-store-sync", "ok", f"Synced {backfill_count} RAG chunks into the vector store.")
+            logger.info("Startup step complete step=rag-vector-store-sync rows=%s", backfill_count)
         except Exception as exc:
-            push_startup_step("rag-embedding-backfill", "warn", f"RAG embedding backfill skipped: {exc}")
-            logger.warning("Startup step warning step=rag-embedding-backfill error=%s", exc)
+            push_startup_step("rag-vector-store-sync", "warn", f"RAG vector store sync skipped: {exc}")
+            logger.warning("Startup step warning step=rag-vector-store-sync error=%s", exc)
     else:
-        push_startup_step("rag-embedding-backfill", "skipped", "AUTO_BACKFILL_RAG_EMBEDDINGS is disabled.")
+        push_startup_step("rag-vector-store-sync", "skipped", "AUTO_BACKFILL_RAG_EMBEDDINGS is disabled.")
 
     STARTUP_STATE["state"] = "ready"
     STARTUP_STATE["completed_at"] = utc_now_iso()

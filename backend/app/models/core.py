@@ -1,8 +1,6 @@
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, Text, func
 
-from app.config import settings
 from app.db import Base
-from app.vector_support import embedding_column_type
 
 
 class RagChunk(Base):
@@ -13,7 +11,6 @@ class RagChunk(Base):
     source_ref = Column(String(255), nullable=False)
     chunk_text = Column(Text, nullable=False)
     chunk_metadata = Column("metadata", JSON, nullable=True)
-    embedding = Column(embedding_column_type(settings.embedding_dim), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 

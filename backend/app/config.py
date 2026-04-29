@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     embedding_dim: int = 768
     auto_backfill_rag_embeddings: bool = True
     rag_embedding_backfill_batch_size: int = 2000
+    vector_store: str = "chroma"
+    chroma_host: str = "chroma"
+    chroma_port: int = 8000
+    chroma_persist_dir: str = "/data/chroma"
+    chroma_collection: str = "rag_chunks"
     admin_api_key: str = ""
     min_review_coverage_score: float = 80.0
 

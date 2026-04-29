@@ -20,6 +20,7 @@ from app.services.parsing_service import (
     strip_nul_text,
 )
 from app.services.vector_service import embedding_for_text
+from app.services.vector_store import delete_by_source_prefix, upsert_rag_chunk
 from app.services.workflow_action_log_utils import (
     resolve_workflow_for_artifact,
     workflow_action_log_details,
@@ -77,17 +78,28 @@ async def upload_file(
 
     if k == "fca" and extracted_text.strip():
         chunks = chunk_text(extracted_text, size=1200, overlap=150)
+        pending_vectors = []
         for i, ch in enumerate(chunks):
+            source_ref = f"artifact:{row.id}:chunk:{i}"
+            metadata = {"artifact_id": row.id, "kind": k}
             db.add(
                 RagChunk(
                     project_id=project_id,
-                    source_ref=f"artifact:{row.id}:chunk:{i}",
+                    source_ref=source_ref,
                     chunk_text=ch,
-                    chunk_metadata={"artifact_id": row.id, "kind": k},
-                    embedding=embedding_for_text(ch),
+                    chunk_metadata=metadata,
                 )
             )
+            pending_vectors.append((source_ref, ch, embedding_for_text(ch), metadata))
         db.commit()
+        for source_ref, ch, embedding, metadata in pending_vectors:
+            upsert_rag_chunk(
+                project_id=project_id,
+                source_ref=source_ref,
+                text=ch,
+                embedding=embedding,
+                metadata=metadata,
+            )
 
     # Log artifact upload
     log_system_audit(
@@ -231,7 +243,9 @@ def delete_artifact(
             except Exception:
                 pass
 
-        db.query(RagChunk).filter(RagChunk.project_id == project_id, RagChunk.source_ref.like(f"artifact:{row.id}:chunk:%")).delete(synchronize_session=False)
+        source_prefix = f"artifact:{row.id}:chunk:"
+        db.query(RagChunk).filter(RagChunk.project_id == project_id, RagChunk.source_ref.like(f"{source_prefix}%")).delete(synchronize_session=False)
+        delete_by_source_prefix(project_id=project_id, source_ref_prefix=source_prefix)
         db.query(AnalysisRun).filter(AnalysisRun.project_id == project_id, AnalysisRun.output_artifact_id == row.id).update({AnalysisRun.output_artifact_id: None}, synchronize_session=False)
         db.delete(row)
 

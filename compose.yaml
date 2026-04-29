@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    image: postgres:16
     container_name: fca-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-fca_app}
@@ -10,12 +10,19 @@ services:
       - "5431:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./infra/postgres/init:/docker-entrypoint-initdb.d:Z
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fca_user} -d ${POSTGRES_DB:-fca_app}"]
       interval: 10s
       timeout: 5s
       retries: 10
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: fca-chroma
+    ports:
+      - "${CHROMA_PORT_HOST:-8001}:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
 
   api:
     build:
@@ -27,6 +34,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      chroma:
+        condition: service_started
     ports:
       - "${API_PORT:-8000}:8000"
     volumes:
@@ -67,6 +76,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      chroma:
+        condition: service_started
     volumes:
       - ./backend:/app:Z
       - ./data:/data:Z
@@ -74,3 +85,4 @@ services:
 
 volumes:
   postgres_data:
+  chroma_data:

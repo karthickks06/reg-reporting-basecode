@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models import RagChunk
 from app.services.vector_service import embedding_for_text, search_rag_chunks
+from app.services.vector_store import upsert_rag_chunk
 
 router = APIRouter()
 
@@ -27,19 +28,30 @@ def rag_ingest(req: RagIngestRequest, db: Session = Depends(get_db)):
     if not req.chunks:
         raise HTTPException(status_code=400, detail="chunks cannot be empty")
     rows = []
+    pending_vectors = []
     for c in req.chunks:
         if c.embedding is not None and len(c.embedding) == 0:
             raise HTTPException(status_code=400, detail=f"invalid embedding for source_ref={c.source_ref}")
+        embedding = c.embedding or embedding_for_text(c.text)
+        metadata = c.metadata or {}
         row = RagChunk(
             project_id=req.project_id,
             source_ref=c.source_ref,
             chunk_text=c.text,
-            chunk_metadata=c.metadata or {},
-            embedding=c.embedding or embedding_for_text(c.text),
+            chunk_metadata=metadata,
         )
         db.add(row)
+        pending_vectors.append((c.source_ref, c.text, embedding, metadata))
         rows.append(row)
     db.commit()
+    for source_ref, text, embedding, metadata in pending_vectors:
+        upsert_rag_chunk(
+            project_id=req.project_id,
+            source_ref=source_ref,
+            text=text,
+            embedding=embedding,
+            metadata=metadata,
+        )
     return {"ok": True, "inserted": len(rows)}
 
 

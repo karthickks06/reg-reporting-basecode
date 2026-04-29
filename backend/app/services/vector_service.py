@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models import RagChunk
-from app.vector_support import supports_vector_distance
+from app.services.vector_store import query_rag_chunks, upsert_rag_chunk
 
 
 def _norm(text: str) -> str:
@@ -128,23 +128,27 @@ def backfill_missing_embeddings(
     source_ref_prefix: str | None = None,
     batch_size: int | None = None,
 ) -> int:
-    """Populate deterministic embeddings for rag rows that were stored before vector writes were enabled."""
-    query = db.query(RagChunk).filter(RagChunk.embedding.is_(None))
+    """Sync existing RAG rows into the configured vector store."""
+    query = db.query(RagChunk)
     if project_id:
         query = query.filter(RagChunk.project_id == project_id)
     if source_ref_prefix:
         query = query.filter(RagChunk.source_ref.like(f"{source_ref_prefix}%"))
 
-    rows = query.limit(max(1, int(batch_size or 5000))).all()
+    rows = query.order_by(RagChunk.id.asc()).limit(max(1, int(batch_size or 5000))).all()
     updated = 0
     for row in rows:
         text_value = _norm(row.chunk_text or "")
         if not text_value:
             continue
-        row.embedding = embedding_for_text(text_value)
-        updated += 1
-    if updated:
-        db.flush()
+        if upsert_rag_chunk(
+            project_id=str(row.project_id),
+            source_ref=str(row.source_ref),
+            text=text_value,
+            embedding=embedding_for_text(text_value),
+            metadata=row.chunk_metadata or {},
+        ):
+            updated += 1
     return updated
 
 
@@ -165,22 +169,34 @@ def sync_model_field_vectors(db: Session, project_id: str, dm_artifact_id: int, 
         sref = _dm_source_ref(dm_artifact_id, field_txt)
         existing_row = existing_rows.get(sref)
         if existing_row:
-            if existing_row.embedding is None:
-                existing_row.embedding = embedding_for_text(field_txt)
+            if upsert_rag_chunk(
+                project_id=project_id,
+                source_ref=sref,
+                text=field_txt,
+                embedding=embedding_for_text(field_txt),
+                metadata=existing_row.chunk_metadata or {},
+            ):
                 inserted_or_updated += 1
             continue
+        metadata = {
+            "kind": "model_field_candidate",
+            "artifact_id": dm_artifact_id,
+            "field": field_txt,
+        }
         db.add(
             RagChunk(
                 project_id=project_id,
                 source_ref=sref,
                 chunk_text=field_txt,
-                chunk_metadata={
-                    "kind": "model_field_candidate",
-                    "artifact_id": dm_artifact_id,
-                    "field": field_txt,
-                },
-                embedding=embedding_for_text(field_txt),
+                chunk_metadata=metadata,
             )
+        )
+        upsert_rag_chunk(
+            project_id=project_id,
+            source_ref=sref,
+            text=field_txt,
+            embedding=embedding_for_text(field_txt),
+            metadata=metadata,
         )
         inserted_or_updated += 1
     return inserted_or_updated
@@ -209,23 +225,35 @@ def sync_required_field_vectors(
         sref = _fca_source_ref(fca_artifact_id, ref)
         existing_row = existing_rows.get(sref)
         if existing_row:
-            if existing_row.embedding is None:
-                existing_row.embedding = embedding_for_text(field)
+            if upsert_rag_chunk(
+                project_id=project_id,
+                source_ref=sref,
+                text=field,
+                embedding=embedding_for_text(field),
+                metadata=existing_row.chunk_metadata or {},
+            ):
                 inserted_or_updated += 1
             continue
+        metadata = {
+            "kind": "fca_required_field",
+            "artifact_id": fca_artifact_id,
+            "ref": ref,
+            "field": field,
+        }
         db.add(
             RagChunk(
                 project_id=project_id,
                 source_ref=sref,
                 chunk_text=field,
-                chunk_metadata={
-                    "kind": "fca_required_field",
-                    "artifact_id": fca_artifact_id,
-                    "ref": ref,
-                    "field": field,
-                },
-                embedding=embedding_for_text(field),
+                chunk_metadata=metadata,
             )
+        )
+        upsert_rag_chunk(
+            project_id=project_id,
+            source_ref=sref,
+            text=field,
+            embedding=embedding_for_text(field),
+            metadata=metadata,
         )
         inserted_or_updated += 1
     return inserted_or_updated
@@ -243,7 +271,7 @@ def build_candidate_map(
     """
     Build the best candidate model fields for each required FCA reference.
 
-    The function first attempts pgvector ordering when embeddings are present,
+    The function first attempts Chroma ordering when embeddings are present,
     then falls back to lexical token overlap so the workflow remains usable if
     vector operators are unavailable.
     """
@@ -273,32 +301,19 @@ def build_candidate_map(
         field = _norm(req.get("field") or "")
         if not ref or not field:
             continue
-        query_vec = hashed_embedding(field)
-
         scored: list[tuple[float, str]] = []
-        # Try pgvector ranking first.
-        if supports_vector_distance(RagChunk.embedding):
-            try:
-                ranked = (
-                    db.query(RagChunk)
-                    .filter(
-                        RagChunk.project_id == project_id,
-                        RagChunk.source_ref.like(f"{model_prefix}%"),
-                        RagChunk.embedding.isnot(None),
-                    )
-                    .order_by(RagChunk.embedding.cosine_distance(query_vec))
-                    .limit(max(top_k * 3, top_k))
-                    .all()
-                )
-                for rr in ranked:
-                    cand = str((rr.chunk_metadata or {}).get("field") or rr.chunk_text or "").strip()
-                    if not cand or _is_noise_candidate(cand):
-                        continue
-                    overlap = _token_overlap(field, cand)
-                    scored.append((0.7 + 0.3 * overlap, cand))
-            except Exception:
-                # Fall back to lexical ranking.
-                pass
+        ranked = query_rag_chunks(
+            project_id=project_id,
+            query_embedding=embedding_for_text(field),
+            limit=max(top_k * 3, top_k),
+            source_ref_prefix=model_prefix,
+        )
+        for rr in ranked:
+            cand = str((rr.get("metadata") or {}).get("field") or rr.get("text") or "").strip()
+            if not cand or _is_noise_candidate(cand):
+                continue
+            overlap = _token_overlap(field, cand)
+            scored.append((0.7 + 0.3 * overlap, cand))
 
         if not scored:
             for rr in model_rows:
@@ -336,7 +351,7 @@ def search_rag_chunks(
     limit: int = 5,
     source_ref_prefix: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Search rag chunks using pgvector first and lexical overlap as a compatibility fallback."""
+    """Search rag chunks using Chroma first and lexical overlap as a compatibility fallback."""
     normalized_query = _norm(query_text)
     if not normalized_query:
         return []
@@ -354,33 +369,21 @@ def search_rag_chunks(
         base_query = base_query.filter(RagChunk.source_ref.like(f"{source_ref_prefix}%"))
 
     results: list[dict[str, Any]] = []
-    if supports_vector_distance(RagChunk.embedding):
-        try:
-            ranked = (
-                base_query
-                .filter(RagChunk.embedding.isnot(None))
-                .order_by(RagChunk.embedding.cosine_distance(embedding_for_text(normalized_query)))
-                .limit(limit)
-                .all()
-            )
-            for rr in ranked:
-                text_value = str(rr.chunk_text or "").strip()
-                overlap = _token_overlap(normalized_query, text_value)
-                results.append(
-                    {
-                        "id": rr.id,
-                        "source_ref": rr.source_ref,
-                        "text": text_value[:1200],
-                        "metadata": rr.chunk_metadata or {},
-                        "score": round(0.7 + 0.3 * overlap, 6),
-                        "created_at": rr.created_at.isoformat() if rr.created_at else None,
-                        "strategy": "vector",
-                    }
-                )
-            if results:
-                return results
-        except Exception:
-            pass
+    ranked = query_rag_chunks(
+        project_id=project_id,
+        query_embedding=embedding_for_text(normalized_query),
+        limit=limit,
+        source_ref_prefix=source_ref_prefix,
+    )
+    if ranked:
+        created_at_by_ref = {
+            str(row.source_ref): row.created_at.isoformat() if row.created_at else None
+            for row in base_query.filter(RagChunk.source_ref.in_([str(r.get("source_ref")) for r in ranked])).all()
+        }
+        for rr in ranked:
+            rr["text"] = str(rr.get("text") or "")[:1200]
+            rr["created_at"] = created_at_by_ref.get(str(rr.get("source_ref") or ""))
+        return ranked
 
     rows = base_query.order_by(RagChunk.id.desc()).limit(max(300, limit * 20)).all()
     scored: list[tuple[float, RagChunk]] = []

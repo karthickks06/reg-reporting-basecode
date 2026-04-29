@@ -21,10 +21,10 @@ def build_troubleshooting_steps(topic: str) -> list[str]:
             "If using local containers, run .\\start-local.ps1 or confirm the postgres container is healthy.",
             "For AWS, verify the RDS security group and database name exist.",
         ]
-    if topic == "pgvector":
+    if topic == "chroma":
         return [
-            "Confirm the PostgreSQL user can run CREATE EXTENSION vector.",
-            "If using RDS, enable pgvector for the target instance and parameter group.",
+            "Confirm the Chroma service is running and reachable from the backend.",
+            "Check CHROMA_HOST, CHROMA_PORT, and CHROMA_COLLECTION in the backend environment.",
             "Check /ready for degraded mode details before inviting users.",
         ]
     if topic == "schema-patches":

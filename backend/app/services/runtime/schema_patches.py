@@ -247,6 +247,11 @@ def _patch_indexes(conn: Connection) -> None:
         _create_index_if_missing(conn, table_name, index_name, columns)
 
 
+def _patch_drop_legacy_rag_embedding(conn: Connection) -> None:
+    if _table_exists(conn, "rag_chunks") and _column_exists(conn, "rag_chunks", "embedding"):
+        _run(conn, "ALTER TABLE rag_chunks DROP COLUMN embedding")
+
+
 def _patch_gate_configuration_legacy_table(conn: Connection) -> None:
     if not (_table_exists(conn, "gate_configuration") and _table_exists(conn, "gate_configurations")):
         return
@@ -308,6 +313,7 @@ PATCHES: tuple[SchemaPatch, ...] = (
     SchemaPatch("20260311_01_artifact_display_name", "Add and backfill artifact display names.", _patch_artifact_display_name),
     SchemaPatch("20260311_02_normalize_workflow_action_logs", "Normalize existing workflow action log values.", _patch_normalize_workflow_action_logs),
     SchemaPatch("20260316_01_compat_placeholder", "Record compatibility placeholder from the previous migration chain.", _patch_mark_compat_placeholder),
+    SchemaPatch("20260429_01_drop_legacy_rag_embedding", "Drop legacy Postgres vector embedding column after Chroma migration.", _patch_drop_legacy_rag_embedding),
     SchemaPatch("20260319_01_supporting_indexes", "Create supporting indexes not guaranteed by create_all on existing tables.", _patch_indexes),
 )
 

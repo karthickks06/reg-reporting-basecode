@@ -10,6 +10,7 @@ from app.config import settings
 from app.db import engine
 from app.models import Base
 from app.services.runtime.state import build_troubleshooting_steps, get_startup_state
+from app.services.vector_store import probe_chroma
 
 
 def mask_connection_url(raw_url: str) -> str:
@@ -37,20 +38,16 @@ def probe_database() -> dict:
             existing_tables = sorted(inspector.get_table_names())
             required_tables = sorted(Base.metadata.tables.keys())
             missing_tables = sorted(set(required_tables) - set(existing_tables))
-            vector_installed = False
             server_version = None
 
             if conn.dialect.name == "postgresql":
                 server_version = conn.execute(text("SHOW server_version")).scalar_one_or_none()
-                vector_installed = bool(
-                    conn.execute(text("SELECT 1 FROM pg_extension WHERE extname = 'vector'")).scalar()
-                )
 
             status.update(
                 {
                     "ok": True,
                     "server_version": server_version,
-                    "vector_installed": vector_installed,
+                    "vector_installed": True,
                     "schema": {
                         "required_table_count": len(required_tables),
                         "existing_table_count": len(existing_tables),
@@ -63,117 +60,6 @@ def probe_database() -> dict:
         status["error"] = str(exc)
         status["troubleshooting"] = build_troubleshooting_steps("database")
     return status
-
-
-def ensure_pgvector_extension() -> dict:
-    """Ensure pgvector extension within the service layer."""
-    result = {
-        "attempted": False,
-        "installed": False,
-        "required_for_bootstrap": True,
-    }
-    if engine.url.get_backend_name() != "postgresql":
-        result["detail"] = "Skipped pgvector extension check for non-PostgreSQL backend."
-        return result
-
-    result["attempted"] = True
-    try:
-        with engine.begin() as conn:
-            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-            result["installed"] = bool(
-                conn.execute(text("SELECT 1 FROM pg_extension WHERE extname = 'vector'")).scalar()
-            )
-            result["detail"] = "pgvector extension is available."
-    except Exception as exc:
-        result["error"] = str(exc)
-        result["detail"] = "pgvector extension could not be enabled automatically."
-        result["troubleshooting"] = build_troubleshooting_steps("pgvector")
-    return result
-
-
-def ensure_rag_chunk_embedding_column() -> dict:
-    """Align rag_chunks.embedding with pgvector even for pre-migration local databases."""
-    result = {
-        "attempted": False,
-        "aligned": False,
-        "installed": False,
-    }
-    if engine.url.get_backend_name() != "postgresql":
-        result["detail"] = "Skipped rag_chunks embedding alignment for non-PostgreSQL backend."
-        return result
-
-    result["attempted"] = True
-    try:
-        with engine.begin() as conn:
-            exists = bool(
-                conn.execute(
-                    text(
-                        """
-                        SELECT 1
-                        FROM information_schema.columns
-                        WHERE table_name = 'rag_chunks' AND column_name = 'embedding'
-                        """
-                    )
-                ).scalar()
-            )
-            if not exists:
-                result["detail"] = "rag_chunks.embedding column is not present yet."
-                result["aligned"] = True
-                return result
-
-            udt_name = conn.execute(
-                text(
-                    """
-                    SELECT udt_name
-                    FROM information_schema.columns
-                    WHERE table_name = 'rag_chunks' AND column_name = 'embedding'
-                    """
-                )
-            ).scalar_one_or_none()
-
-            if str(udt_name or "").lower() != "vector":
-                conn.execute(
-                    text(
-                        f"""
-                        ALTER TABLE rag_chunks
-                        ALTER COLUMN embedding
-                        TYPE vector({int(settings.embedding_dim)})
-                        USING CASE
-                            WHEN embedding IS NULL THEN NULL
-                            ELSE embedding::vector
-                        END
-                        """
-                    )
-                )
-
-            conn.execute(
-                text(
-                    """
-                    CREATE INDEX IF NOT EXISTS ix_rag_chunks_project_id_source_ref
-                    ON rag_chunks (project_id, source_ref)
-                    """
-                )
-            )
-            row_count = int(conn.execute(text("SELECT COUNT(*) FROM rag_chunks")).scalar() or 0)
-            if row_count >= 100:
-                conn.execute(
-                    text(
-                        """
-                        CREATE INDEX IF NOT EXISTS ix_rag_chunks_embedding_ivfflat
-                        ON rag_chunks USING ivfflat (embedding vector_cosine_ops)
-                        WITH (lists = 100)
-                        """
-                    )
-                )
-
-        result["aligned"] = True
-        result["installed"] = True
-        result["detail"] = "rag_chunks.embedding is aligned to pgvector storage."
-    except Exception as exc:
-        result["error"] = str(exc)
-        result["detail"] = "rag_chunks.embedding could not be aligned to pgvector automatically."
-        result["troubleshooting"] = build_troubleshooting_steps("pgvector")
-    return result
 
 
 def ensure_schema_tables() -> dict:
@@ -272,6 +158,9 @@ def summarize_runtime_status(db_status: dict, llm_status: dict) -> tuple[str, bo
     """Summarize runtime status within the service layer."""
     if not db_status.get("ok"):
         return "down", False
+    vector_status = db_status.get("vector_store")
+    if isinstance(vector_status, dict) and vector_status.get("ok") is False:
+        return "degraded", True
     if llm_status.get("ok") is False:
         return "degraded", True
     if db_status.get("schema", {}).get("complete") is False:
@@ -284,6 +173,7 @@ def summarize_runtime_status(db_status: dict, llm_status: dict) -> tuple[str, bo
 async def collect_runtime_health() -> dict:
     """Collect runtime health within the service layer."""
     db_status = probe_database()
+    db_status["vector_store"] = probe_chroma()
     llm_status = await probe_llm()
     status, ready = summarize_runtime_status(db_status, llm_status)
     return {

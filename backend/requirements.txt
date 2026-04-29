@@ -5,7 +5,7 @@ httpx
 openai
 sqlalchemy
 psycopg[binary]
-pgvector
+chromadb
 python-multipart
 pypdf
 python-docx
