@@ -62,7 +62,7 @@ export const ArtifactConfigPage = () => {
   const loadConfiguration = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/system/github/configuration');
+      const response = await api.get('/api/system/github/configuration');
       if (response.data) {
         setConfig({
           repository_url: response.data.repository_url ?? '',
@@ -83,7 +83,7 @@ export const ArtifactConfigPage = () => {
   const loadLocalConfiguration = async () => {
     setLocalLoading(true);
     try {
-      const response = await api.get('/system/local/configuration');
+      const response = await api.get('/api/system/local/configuration');
       if (response.data) {
         setLocalConfig({
           local_storage_path: response.data.local_storage_path ?? '',
@@ -110,7 +110,7 @@ export const ArtifactConfigPage = () => {
     setValidationStatus(null);
 
     try {
-      const response = await api.post('/system/github/validate', {
+      const response = await api.post('/api/system/github/validate', {
         repository_url: config.repository_url,
         access_token: config.access_token,
         default_branch: config.default_branch,
@@ -140,7 +140,7 @@ export const ArtifactConfigPage = () => {
     setSaving(true);
 
     try {
-      await api.post('/system/github/configure', {
+      await api.post('/api/system/github/configure', {
         repository_url: config.repository_url,
         access_token: config.access_token,
         default_branch: config.default_branch,
@@ -175,7 +175,7 @@ export const ArtifactConfigPage = () => {
     setLocalSaving(true);
 
     try {
-      await api.post('/system/local/configure', {
+      await api.post('/api/system/local/configure', {
         local_storage_path: localConfig.local_storage_path,
         auto_save_enabled: localConfig.auto_save_enabled,
         create_subfolders_by_date: localConfig.create_subfolders_by_date,

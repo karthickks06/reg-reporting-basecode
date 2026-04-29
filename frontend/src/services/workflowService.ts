@@ -1,6 +1,18 @@
 import api from '@/utils/axios';
 import { Workflow } from '@/types';
 
+const PROJECT_ID = import.meta.env.VITE_PROJECT_ID || 'local-workspace';
+
+const normalizeWorkflow = (workflow: any): Workflow => ({
+  ...workflow,
+  id: String(workflow.id),
+  workflow_id: workflow.workflow_id || workflow.display_id || String(workflow.id),
+  workflow_name: workflow.workflow_name || workflow.name || workflow.display_id || String(workflow.id),
+  workflow_type: workflow.workflow_type || 'Complete',
+  created_by: workflow.created_by || workflow.started_by || 'user',
+  version: workflow.version || workflow.psd_version || '1.0',
+});
+
 /**
  * Workflow Service - Manual Step Execution Only
  *
@@ -13,21 +25,23 @@ export const workflowService = {
   // ============================================================================
 
   getAll: async (): Promise<Workflow[]> => {
-    const response = await api.get<Workflow[]>('/workflows/');
-    return response.data;
+    const response = await api.get<{ items: Workflow[] }>('/v1/workflows', {
+      params: { project_id: PROJECT_ID },
+    });
+    return (response.data.items || []).map(normalizeWorkflow);
   },
 
   getById: async (id: string | number): Promise<Workflow> => {
-    const response = await api.get<Workflow>(`/workflows/${id}`);
-    return response.data;
+    const response = await api.get<{ workflow: Workflow }>(`/v1/workflows/${id}`);
+    return normalizeWorkflow(response.data.workflow || response.data);
   },
 
   delete: async (id: string | number): Promise<void> => {
-    await api.delete(`/workflows/${id}`);
+    await api.delete(`/api/workflows/${id}`);
   },
 
   getSteps: async (id: string | number): Promise<any[]> => {
-    const response = await api.get<any[]>(`/workflows/${id}/steps`);
+    const response = await api.get<any[]>(`/api/workflows/${id}/steps`);
     return response.data;
   },
 
@@ -37,7 +51,7 @@ export const workflowService = {
 
   createByPersona: async (data: { name: string; persona: string; version: string; description?: string }): Promise<any> => {
     // Use generic workflows endpoint
-    const endpoint = '/workflows';
+    const endpoint = '/v1/workflows';
 
     // Map persona to workflow_type format expected by backend
     const workflowTypeMap: Record<string, string> = {
@@ -49,14 +63,15 @@ export const workflowService = {
     };
 
     const payload = {
-      workflow_name: data.name,
+      project_id: PROJECT_ID,
+      name: data.name,
       workflow_type: workflowTypeMap[data.persona] || 'Complete',
       description: data.description || '',
-      version: data.version || '1.0'
+      psd_version: data.version || '1.0'
     };
 
     const response = await api.post(endpoint, payload);
-    return response.data;
+    return normalizeWorkflow(response.data.workflow || response.data);
   },
 
   // ============================================================================
@@ -64,48 +79,52 @@ export const workflowService = {
   // ============================================================================
 
   executeDocumentParser: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/steps/document-parser`, context || {});
+    const response = await api.post(`/api/ba/workflows/${id}/steps/document-parser`, context || {});
     return response.data;
   },
 
   executeRegulatoryDiff: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/steps/regulatory-diff`, context || {});
+    const response = await api.post(`/api/ba/workflows/${id}/steps/regulatory-diff`, context || {});
     return response.data;
   },
 
   executeDictionaryMapping: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/steps/dictionary-mapping`, context || {});
+    const response = await api.post(`/api/ba/workflows/${id}/steps/dictionary-mapping`, context || {});
     return response.data;
   },
 
   executeGapAnalysis: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/steps/gap-analysis`, context || {});
+    const response = await api.post('/v1/gap-analysis/run', {
+      project_id: PROJECT_ID,
+      workflow_id: Number(id),
+      ...context,
+    });
     return response.data;
   },
 
   executeRequirementStructuring: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/steps/requirement-structuring`, context || {});
+    const response = await api.post(`/api/ba/workflows/${id}/steps/requirement-structuring`, context || {});
     return response.data;
   },
 
   executeTestCaseGenerator: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/steps/test-case-generator`, context || {});
+    const response = await api.post(`/api/ba/workflows/${id}/steps/test-case-generator`, context || {});
     return response.data;
   },
 
   executeOntologyUpdate: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/steps/ontology-update`, context || {});
+    const response = await api.post(`/api/ba/workflows/${id}/steps/ontology-update`, context || {});
     return response.data;
   },
 
   // BA Workflow Pause/Resume
   pauseBAWorkflow: async (id: string): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/pause`);
+    const response = await api.post(`/api/ba/workflows/${id}/pause`);
     return response.data;
   },
 
   resumeBAWorkflow: async (id: string): Promise<any> => {
-    const response = await api.post(`/ba/workflows/${id}/resume`);
+    const response = await api.post(`/api/ba/workflows/${id}/resume`);
     return response.data;
   },
 
@@ -114,43 +133,47 @@ export const workflowService = {
   // ============================================================================
 
   executeSchemaAnalyzer: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/steps/schema-analyzer`, context || {});
+    const response = await api.post(`/api/developer/workflows/${id}/steps/schema-analyzer`, context || {});
     return response.data;
   },
 
   executeSQLGenerator: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/steps/sql-generator`, context || {});
+    const response = await api.post('/v1/sql/generate', {
+      project_id: PROJECT_ID,
+      workflow_id: Number(id),
+      ...context,
+    });
     return response.data;
   },
 
   executePythonETLGenerator: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/steps/python-etl-generator`, context || {});
+    const response = await api.post(`/api/developer/workflows/${id}/steps/python-etl-generator`, context || {});
     return response.data;
   },
 
   executeLineageBuilder: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/steps/lineage-builder`, context || {});
+    const response = await api.post(`/api/developer/workflows/${id}/steps/lineage-builder`, context || {});
     return response.data;
   },
 
   executeDeterministicMapping: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/steps/deterministic-mapping`, context || {});
+    const response = await api.post(`/api/developer/workflows/${id}/steps/deterministic-mapping`, context || {});
     return response.data;
   },
 
   executeTestIntegration: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/steps/test-integration`, context || {});
+    const response = await api.post(`/api/developer/workflows/${id}/steps/test-integration`, context || {});
     return response.data;
   },
 
   // Developer Workflow Pause/Resume
   pauseDeveloperWorkflow: async (id: string): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/pause`);
+    const response = await api.post(`/api/developer/workflows/${id}/pause`);
     return response.data;
   },
 
   resumeDeveloperWorkflow: async (id: string): Promise<any> => {
-    const response = await api.post(`/developer/workflows/${id}/resume`);
+    const response = await api.post(`/api/developer/workflows/${id}/resume`);
     return response.data;
   },
 
@@ -159,43 +182,47 @@ export const workflowService = {
   // ============================================================================
 
   executeValidation: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/steps/validation`, context || {});
+    const response = await api.post('/v1/xml/validate', {
+      project_id: PROJECT_ID,
+      workflow_id: Number(id),
+      ...context,
+    });
     return response.data;
   },
 
   executeAnomalyDetection: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/steps/anomaly-detection`, context || {});
+    const response = await api.post(`/api/analyst/workflows/${id}/steps/anomaly-detection`, context || {});
     return response.data;
   },
 
   executeVarianceExplanation: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/steps/variance-explanation`, context || {});
+    const response = await api.post(`/api/analyst/workflows/${id}/steps/variance-explanation`, context || {});
     return response.data;
   },
 
   executeCrossReportReconciliation: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/steps/cross-report-reconciliation`, context || {});
+    const response = await api.post(`/api/analyst/workflows/${id}/steps/cross-report-reconciliation`, context || {});
     return response.data;
   },
 
   executeAuditPackGenerator: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/steps/audit-pack-generator`, context || {});
+    const response = await api.post(`/api/analyst/workflows/${id}/steps/audit-pack-generator`, context || {});
     return response.data;
   },
 
   executePSDCSVGenerator: async (id: string, context?: any): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/steps/psd-csv-generator`, context || {});
+    const response = await api.post(`/api/analyst/workflows/${id}/steps/psd-csv-generator`, context || {});
     return response.data;
   },
 
   // Analyst/Reviewer Workflow Pause/Resume
   pauseReviewerWorkflow: async (id: string): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/pause`);
+    const response = await api.post(`/api/analyst/workflows/${id}/pause`);
     return response.data;
   },
 
   resumeReviewerWorkflow: async (id: string): Promise<any> => {
-    const response = await api.post(`/analyst/workflows/${id}/resume`);
+    const response = await api.post(`/api/analyst/workflows/${id}/resume`);
     return response.data;
   },
 };

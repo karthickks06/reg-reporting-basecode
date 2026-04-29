@@ -10,6 +10,7 @@
 
 import { create } from 'zustand';
 import { Workflow } from '@/types';
+import api from '@/utils/axios';
 
 interface DashboardStats {
   totalWorkflows: number;
@@ -61,17 +62,8 @@ const useDashboardStoreBase = create<DashboardState>((set, get) => ({
   fetchMyWorkflows: async () => {
     set({ isLoading: true });
     try {
-      const response = await fetch('/api/dashboard/my-tasks', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch workflows');
-      }
-
-      const data = await response.json();
+      const response = await api.get('/api/dashboard/my-tasks');
+      const data = response.data;
 
       // Separate workflows by priority and recency
       const highPriority = data.filter((w: Workflow) =>
@@ -100,17 +92,8 @@ const useDashboardStoreBase = create<DashboardState>((set, get) => ({
   fetchDashboardStats: async () => {
     set({ isLoadingStats: true });
     try {
-      const response = await fetch('/api/dashboard/my-stats', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch stats');
-      }
-
-      const stats = await response.json();
+      const response = await api.get('/api/dashboard/my-stats');
+      const stats = response.data;
       set({ stats, isLoadingStats: false });
     } catch (error) {
       console.error('Error fetching stats:', error);

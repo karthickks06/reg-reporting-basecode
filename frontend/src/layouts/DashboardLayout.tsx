@@ -50,6 +50,8 @@ import logo from '@/components/assets/Logo.png';
 import api from '@/utils/axios';
 import { authService } from '@/services/authService';
 
+const PROJECT_ID = import.meta.env.VITE_PROJECT_ID || 'local-workspace';
+
 const drawerWidth = 240;
 const collapsedDrawerWidth = 80;
 
@@ -157,9 +159,11 @@ export const DashboardLayout = () => {
     }
 
     try {
-      const response = await api.get('/dashboard/workspace-overview');
-      if (response.data && response.data.notifications) {
-        setNotifications(response.data.notifications);
+      const response = await api.get('/v1/manager/dashboard', {
+        params: { project_id: PROJECT_ID },
+      });
+      if (response.data) {
+        setNotifications(response.data.notifications || []);
         // Reset retry count on success
         setNotificationRetryCount(0);
       }

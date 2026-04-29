@@ -64,7 +64,7 @@ export interface CreateCommentRequest {
  * Create a new workflow assignment
  */
 export const createAssignment = async (data: CreateAssignmentRequest) => {
-  const response = await api.post('/workflow-assignments', data);
+  const response = await api.post('/api/workflow-assignments', data);
   return response.data;
 };
 
@@ -73,7 +73,7 @@ export const createAssignment = async (data: CreateAssignmentRequest) => {
  */
 export const getMyAssignments = async (statusFilter?: string) => {
   const params = statusFilter ? { status_filter: statusFilter } : {};
-  const response = await api.get('/workflow-assignments/my-assignments', { params });
+  const response = await api.get('/api/workflow-assignments/my-assignments', { params });
   return response.data;
 };
 
@@ -81,7 +81,7 @@ export const getMyAssignments = async (statusFilter?: string) => {
  * Get pending assignments (unread notifications)
  */
 export const getPendingAssignments = async () => {
-  const response = await api.get('/workflow-assignments/my-pending-assignments');
+  const response = await api.get('/api/workflow-assignments/my-pending-assignments');
   return response.data;
 };
 
@@ -92,7 +92,7 @@ export const updateAssignmentStatus = async (
   assignmentId: string,
   data: UpdateAssignmentRequest
 ) => {
-  const response = await api.patch(`/workflow-assignments/${assignmentId}/status`, data);
+  const response = await api.patch(`/api/workflow-assignments/${assignmentId}/status`, data);
   return response.data;
 };
 
@@ -100,7 +100,7 @@ export const updateAssignmentStatus = async (
  * Mark assignment notification as read
  */
 export const markAssignmentRead = async (assignmentId: string) => {
-  const response = await api.patch(`/workflow-assignments/${assignmentId}/mark-read`);
+  const response = await api.patch(`/api/workflow-assignments/${assignmentId}/mark-read`);
   return response.data;
 };
 
@@ -111,7 +111,7 @@ export const addComment = async (
   assignmentId: string,
   data: CreateCommentRequest
 ) => {
-  const response = await api.post(`/workflow-assignments/${assignmentId}/comments`, data);
+  const response = await api.post(`/api/workflow-assignments/${assignmentId}/comments`, data);
   return response.data;
 };
 
@@ -119,7 +119,7 @@ export const addComment = async (
  * Get all comments for assignment
  */
 export const getComments = async (assignmentId: string) => {
-  const response = await api.get(`/workflow-assignments/${assignmentId}/comments`);
+  const response = await api.get(`/api/workflow-assignments/${assignmentId}/comments`);
   return response.data;
 };
 
@@ -127,7 +127,7 @@ export const getComments = async (assignmentId: string) => {
  * Get assignment history for workflow
  */
 export const getAssignmentHistory = async (workflowId: string) => {
-  const response = await api.get(`/workflow-assignments/workflow/${workflowId}/history`);
+  const response = await api.get(`/api/workflow-assignments/workflow/${workflowId}/history`);
   return response.data;
 };
 
@@ -135,7 +135,7 @@ export const completeWorkflow = async (
   workflowId: string,
   data: { comments: string; priority?: string }
 ) => {
-  const response = await api.post(`/workflows/${workflowId}/stages/submit`, {
+  const response = await api.post(`/api/workflows/${workflowId}/stages/submit`, {
     to_user_id: '',
     comments: data.comments,
     priority: data.priority,
@@ -147,7 +147,7 @@ export const assignToStage = async (
   workflowId: string,
   data: { to_user_id: string | null; comments: string; priority?: string; stage: string }
 ) => {
-  const response = await api.post(`/workflows/${workflowId}/stages/submit`, {
+  const response = await api.post(`/api/workflows/${workflowId}/stages/submit`, {
     to_user_id: data.to_user_id || '',
     comments: data.comments,
     priority: data.priority,
@@ -169,7 +169,7 @@ export const submitWorkflow = async (
     return_to_stage?: 'business_analyst' | 'developer';
   }
 ) => {
-  const endpoint = `/${workflowType}-workflows/${workflowId}/submit`;
+  const endpoint = `/api/workflows/${workflowId}/stages/${data.action === 'return' ? 'return' : 'submit'}`;
 
   // Transform data for analyst/reviewer workflow
   const submitData: any = { ...data };

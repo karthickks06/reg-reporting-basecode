@@ -191,16 +191,12 @@ class UnifiedWorkflowService {
       return_to_stage?: string;
     }
   ) {
-    const response = await axios.post(`/workflow-assignments/submit`, {
-      workflow_id: workflowId,
-      action,
-      ...params
-    });
+    const response = await axios.post(`/api/workflows/${workflowId}/stages/${action === 'return' ? 'return' : 'submit'}`, params);
     return response.data;
   }
 
   async getWorkflowAssignments(userId: string, status?: string) {
-    const response = await axios.get('/workflow-assignments/', {
+    const response = await axios.get('/api/workflow-assignments/my-assignments', {
       params: { user_id: userId, status }
     });
     return response.data;

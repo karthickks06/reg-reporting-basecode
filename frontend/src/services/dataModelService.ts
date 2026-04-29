@@ -6,6 +6,8 @@
 
 import axios from '../utils/axios';
 
+const PROJECT_ID = import.meta.env.VITE_PROJECT_ID || 'local-workspace';
+
 export interface DataModel {
   id: number;
   name: string;
@@ -82,12 +84,13 @@ export const uploadDataModel = async (
   formData.append('file', file);
   formData.append('name', name);
   formData.append('version', version);
+  formData.append('project_id', PROJECT_ID);
   if (description) formData.append('description', description);
   if (modelType) formData.append('model_type', modelType);
   if (domain) formData.append('domain', domain);
   if (tags) formData.append('tags', tags);
 
-  const response = await axios.post('/model-library/upload', formData, {
+  const response = await axios.post('/api/model-library/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -105,12 +108,12 @@ export const getDataModels = async (
   domain?: string,
   search?: string
 ): Promise<{ models: DataModel[]; total: number; skip: number; limit: number }> => {
-  const params: any = { skip, limit };
+  const params: any = { skip, limit, project_id: PROJECT_ID };
   if (status) params.status = status;
   if (domain) params.domain = domain;
   if (search) params.search = search;
 
-  const response = await axios.get('/model-library/models', { params });
+  const response = await axios.get('/api/model-library/models', { params });
   return response.data;
 };
 
@@ -118,7 +121,7 @@ export const getDataModels = async (
  * Get detailed information about a specific data model
  */
 export const getDataModelDetail = async (modelId: number): Promise<DataModelDetail> => {
-  const response = await axios.get(`/model-library/models/${modelId}`);
+  const response = await axios.get(`/api/model-library/models/${modelId}`);
   return response.data;
 };
 
@@ -135,7 +138,7 @@ export const updateDataModel = async (
     tags?: string;
   }
 ): Promise<any> => {
-  const response = await axios.put(`/model-library/models/${modelId}`, updates);
+  const response = await axios.put(`/api/model-library/models/${modelId}`, updates);
   return response.data;
 };
 
@@ -143,7 +146,7 @@ export const updateDataModel = async (
  * Delete a data model
  */
 export const deleteDataModel = async (modelId: number): Promise<any> => {
-  const response = await axios.delete(`/model-library/models/${modelId}`);
+  const response = await axios.delete(`/api/model-library/models/${modelId}`);
   return response.data;
 };
 
@@ -151,6 +154,6 @@ export const deleteDataModel = async (modelId: number): Promise<any> => {
  * Get Model Library statistics
  */
 export const getDataModelStats = async (): Promise<DataModelStats> => {
-  const response = await axios.get('/model-library/stats');
+  const response = await axios.get('/api/model-library/stats', { params: { project_id: PROJECT_ID } });
   return response.data;
 };

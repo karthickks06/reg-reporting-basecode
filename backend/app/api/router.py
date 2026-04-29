@@ -4,6 +4,7 @@ from app.api.routes.auth_routes import router as auth_router
 from app.api.routes.admin_routes import router as admin_router
 from app.api.routes.artifact_routes import router as artifact_router
 from app.api.routes.ba_routes import router as ba_router
+from app.api.routes.compat_routes import router as compat_router
 from app.api.routes.dev_routes import router as dev_router
 from app.api.routes.gate_config_routes import router as gate_config_router
 from app.api.routes.integration_routes import router as integration_router
@@ -27,6 +28,7 @@ api_router.include_router(integration_router)
 api_router.include_router(logging_router)
 api_router.include_router(job_router)
 api_router.include_router(ba_router)
+api_router.include_router(compat_router)
 api_router.include_router(dev_router)
 api_router.include_router(reviewer_router)
 api_router.include_router(workflow_router)

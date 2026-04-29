@@ -27,6 +27,8 @@ import {
   AccountTree,
 } from '@mui/icons-material';
 
+const PROJECT_ID = import.meta.env.VITE_PROJECT_ID || 'local-workspace';
+
 interface WorkflowQueueStats {
   needs_action: number;
   in_progress: number;
@@ -175,17 +177,30 @@ export const DashboardPage = () => {
 
     try {
       // Load comprehensive workspace overview
-      const overviewResponse = await api.get('/dashboard/workspace-overview');
+      const overviewResponse = await api.get('/v1/manager/dashboard', {
+        params: { project_id: PROJECT_ID },
+      });
       if (overviewResponse.data) {
-        setStats(overviewResponse.data.stats);
-        setRecentActivities(overviewResponse.data.recent_activities || []);
+        const metrics = overviewResponse.data.metrics || {};
+        const pipeline = overviewResponse.data.pipeline?.pipeline || {};
+        setStats({
+          needs_action: 0,
+          in_progress: metrics.in_progress_workflows || 0,
+          completed: metrics.completed_workflows || 0,
+          background_jobs: 0,
+          blocked_workflows: overviewResponse.data.pipeline?.stuck_workflows || 0,
+          ready_to_advance: 0,
+          active_workspace: PROJECT_ID,
+          ...overviewResponse.data.stats,
+        });
+        setRecentActivities(overviewResponse.data.recent_activity || overviewResponse.data.recent_activities || []);
         setPerformanceMetrics(overviewResponse.data.performance_metrics || {
-          avg_completion_time: '0 days',
-          tasks_completed: 0,
-          on_time_rate: '0%',
+          avg_completion_time: `${metrics.avg_cycle_time_hours || 0} hours`,
+          tasks_completed: metrics.completed_workflows || 0,
+          on_time_rate: `${metrics.quality_first_pass_rate || 100}%`,
           pending_reviews: 0,
         });
-        setTeamActivity(overviewResponse.data.team_activity || []);
+        setTeamActivity(overviewResponse.data.team_activity?.actors || overviewResponse.data.team_activity || []);
         setNotifications(overviewResponse.data.notifications || []);
         setUpcomingDeadlines(overviewResponse.data.upcoming_deadlines || []);
         setInsights(overviewResponse.data.insights || []);
@@ -218,7 +233,9 @@ export const DashboardPage = () => {
 
     try {
       // Load all workflows from the workflow list
-      const workflowsResponse = await api.get('/workflows');
+      const workflowsResponse = await api.get('/v1/workflows', {
+        params: { project_id: PROJECT_ID },
+      });
       if (workflowsResponse.data) {
         const workflows = workflowsResponse.data?.items || workflowsResponse.data?.workflows || workflowsResponse.data || [];
 
@@ -230,7 +247,10 @@ export const DashboardPage = () => {
           const isAssignedToMe =
             (wf.current_stage === 'business_analyst' && wf.ba_assignee_id === currentUserId) ||
             (wf.current_stage === 'developer' && wf.developer_assignee_id === currentUserId) ||
-            (wf.current_stage === 'reviewer' && wf.reviewer_assignee_id === currentUserId);
+            (wf.current_stage === 'reviewer' && wf.reviewer_assignee_id === currentUserId) ||
+            wf.current_assignee === user?.username ||
+            wf.current_assignee === user?.email ||
+            !currentUserId;
 
           return isAssignedToMe && wf.status !== 'completed' && wf.status !== 'cancelled';
         });
@@ -241,13 +261,13 @@ export const DashboardPage = () => {
 
         myWorkflows.forEach((wf: any) => {
           const workflowItem: Workflow = {
-            id: wf.id,
-            workflow_id: wf.workflow_id,
-            workflow_name: wf.workflow_name,
+            id: String(wf.id),
+            workflow_id: wf.workflow_id || wf.display_id || String(wf.id),
+            workflow_name: wf.workflow_name || wf.name || wf.display_id || String(wf.id),
             stage: wf.current_stage || 'N/A',
             status: wf.status || 'draft',
             pending_owner: wf.current_stage || 'N/A',
-            psd_version: wf.version || '1.0',
+            psd_version: wf.version || wf.psd_version || '1.0',
             updated: wf.updated_at ? new Date(wf.updated_at).toLocaleString('en-GB') : 'N/A',
             blocked: wf.stage_status === 'blocked' || wf.status === 'blocked',
             block_message: wf.stage_status === 'blocked' ? 'This workflow is currently blocked. Please review and resolve issues.' : undefined,
@@ -379,7 +399,9 @@ export const DashboardPage = () => {
   const handleResumeDraft = async () => {
     try {
       // Fetch all workflows
-      const response = await api.get('/workflows');
+      const response = await api.get('/v1/workflows', {
+        params: { project_id: PROJECT_ID },
+      });
       const workflows = response.data?.items || response.data?.workflows || response.data || [];
 
       // Find draft workflows

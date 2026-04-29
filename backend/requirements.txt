@@ -1,15 +1,90 @@
+# ==============================
+# NTT_Data_MCP_System - Backend
+# Optimized Production Requirements
+# Python 3.10 Compatible
+# ==============================
+
+# ------------------------------
+# Core Web Framework
+# ------------------------------
 fastapi
-uvicorn[standard]
-pydantic-settings
-httpx
-openai
-sqlalchemy
-psycopg[binary]
-chromadb
-python-multipart
-pypdf
-python-docx
+uvicorn[standard]==0.27.1
+gunicorn==21.2.0
+
+# ------------------------------
+# Database
+# ------------------------------
+SQLAlchemy==2.0.48
+asyncpg==0.31.0
+
+# ------------------------------
+# Authentication & Security
+# ------------------------------
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart==0.0.22
+email-validator==2.3.0
+bcrypt==4.0.1
+# ------------------------------
+# Configuration
+# ------------------------------
+pydantic==2.12.5
+pydantic[email]
+pydantic-settings==2.13.1
+python-dotenv==1.2.2
+# ------------------------------
+# HTTP Clients
+# ------------------------------
+httpx==0.28.1
+requests==2.33.1
+
+# ------------------------------
+# AI / LLM Stack
+# ------------------------------
+openai==2.30.0
+anthropic==0.87.0
+langchain==1.2.14
+langchain-core==1.2.23
+langchain-openai==1.1.12
+langchain-anthropic==1.4.0
+langchain-community==0.4.1
+langchain-text-splitters==1.1.1
+langgraph==1.1.4
+langgraph-sdk==0.3.12
+langgraph-checkpoint==4.0.1
+langgraph-prebuilt==1.0.8
+chromadb==1.5.5
+tiktoken==0.12.0
+
+# ------------------------------
+# Data Processing
+# ------------------------------
 pandas
-openpyxl
-lxml
+numpy
+scikit-learn
+scipy
+networkx==3.4.2
+openpyxl==3.1.5
+lxml==6.0.2
+PyPDF2==3.0.1
+python-docx==1.2.0
+python-pptx==1.0.2
+xlsxwriter==3.2.9
 xmlschema
+# ------------------------------
+# Utilities
+# ------------------------------
+aiofiles==25.1.0
+tenacity==9.1.4
+loguru==0.7.2
+rich==14.3.3
+orjson==3.11.8
+dotenv
+sqlalchemy
+# ==============================
+# NOTE:
+# - Transitive dependencies removed (pip resolves automatically)
+# - Compatible with Python 3.10
+# - Clean production-grade file
+# ==============================
+

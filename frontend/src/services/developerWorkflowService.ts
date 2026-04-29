@@ -371,7 +371,7 @@ export const developerWorkflowService = {
     if (description) formData.append('description', description);
 
     const response = await axios.post(
-      `/developer/workflows/${workflowId}/upload-csv`,
+      `/api/developer/workflows/${workflowId}/upload-csv`,
       formData,
       {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -387,7 +387,7 @@ export const developerWorkflowService = {
    * @returns List of CSV files with metadata
    */
   listCSVFiles: async (workflowId: string): Promise<any[]> => {
-    const response = await axios.get(`/developer/workflows/${workflowId}/csv-files`);
+    const response = await axios.get(`/api/developer/workflows/${workflowId}/csv-files`);
     return response.data.files;
   },
 
@@ -400,7 +400,7 @@ export const developerWorkflowService = {
    */
   getCSVFile: async (workflowId: string, fileId: string): Promise<any> => {
     const response = await axios.get(
-      `/developer/workflows/${workflowId}/csv-files/${fileId}`
+      `/api/developer/workflows/${workflowId}/csv-files/${fileId}`
     );
     return response.data;
   },
@@ -414,7 +414,7 @@ export const developerWorkflowService = {
    */
   downloadCSVFile: async (workflowId: string, fileId: string): Promise<Blob> => {
     const response = await axios.get(
-      `/developer/workflows/${workflowId}/csv-files/${fileId}/download`,
+      `/api/developer/workflows/${workflowId}/csv-files/${fileId}/download`,
       { responseType: 'blob' }
     );
     return response.data;
@@ -427,7 +427,7 @@ export const developerWorkflowService = {
    * @param fileId - File UUID
    */
   deleteCSVFile: async (workflowId: string, fileId: string): Promise<void> => {
-    await axios.delete(`/developer/workflows/${workflowId}/csv-files/${fileId}`);
+    await axios.delete(`/api/developer/workflows/${workflowId}/csv-files/${fileId}`);
   },
 
   /**
@@ -444,7 +444,7 @@ export const developerWorkflowService = {
     expectedFileId: string
   ): Promise<any> => {
     const response = await axios.post(
-      `/developer/workflows/${workflowId}/validate-csv`,
+      `/api/developer/workflows/${workflowId}/validate-csv`,
       null,
       {
         params: {
@@ -474,7 +474,7 @@ export const developerWorkflowService = {
     checkLevel: 'basic' | 'standard' | 'strict' = 'standard'
   ): Promise<any> => {
     const response = await axios.post(
-      `/developer/workflows/${workflowId}/quality-gate`,
+      `/api/developer/workflows/${workflowId}/quality-gate`,
       null,
       { params: { check_level: checkLevel } }
     );
@@ -489,7 +489,7 @@ export const developerWorkflowService = {
    */
   analyzeSQLComplexity: async (sqlScriptId: string): Promise<any> => {
     const response = await axios.get(
-      `/developer/sql/${sqlScriptId}/complexity-analysis`
+      `/api/developer/sql/${sqlScriptId}/complexity-analysis`
     );
     return response.data;
   },
@@ -506,7 +506,7 @@ export const developerWorkflowService = {
     validationLevel: 'basic' | 'standard' | 'strict' = 'standard'
   ): Promise<any> => {
     const response = await axios.post(
-      `/developer/sql/${sqlScriptId}/validate`,
+      `/api/developer/sql/${sqlScriptId}/validate`,
       null,
       { params: { validation_level: validationLevel } }
     );
@@ -524,7 +524,7 @@ export const developerWorkflowService = {
    * @returns Job status with progress
    */
   getJobStatus: async (jobId: string): Promise<any> => {
-    const response = await axios.get(`/tasks/status/${jobId}`);
+    const response = await axios.get(`/api/tasks/status/${jobId}`);
     return response.data;
   },
 
@@ -534,7 +534,7 @@ export const developerWorkflowService = {
    * @param jobId - Job UUID
    */
   cancelJob: async (jobId: string): Promise<void> => {
-    await axios.post(`/tasks/${jobId}/cancel`);
+    await axios.post(`/api/tasks/${jobId}/cancel`);
   },
 
   /**
@@ -544,7 +544,7 @@ export const developerWorkflowService = {
    * @returns New job information
    */
   retryJob: async (jobId: string): Promise<any> => {
-    const response = await axios.post(`/tasks/${jobId}/retry`);
+    const response = await axios.post(`/api/tasks/${jobId}/retry`);
     return response.data;
   },
 };

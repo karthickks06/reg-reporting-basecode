@@ -58,7 +58,7 @@ export interface UpdateConfigRequest {
  * Get all stage configurations
  */
 export const getAllConfigurations = async () => {
-  const response = await api.get('/stage-configurations');
+  const response = await api.get('/api/stage-configurations');
   return response.data;
 };
 
@@ -68,7 +68,7 @@ export const getAllConfigurations = async () => {
 export const getConfiguration = async (
   stageName: 'business_analyst' | 'developer' | 'reviewer'
 ) => {
-  const response = await api.get(`/stage-configurations/${stageName}`);
+  const response = await api.get(`/api/stage-configurations/${stageName}`);
   return response.data;
 };
 
@@ -79,7 +79,7 @@ export const updateConfiguration = async (
   stageName: 'business_analyst' | 'developer' | 'reviewer',
   data: UpdateConfigRequest
 ) => {
-  const response = await api.put(`/stage-configurations/${stageName}`, data);
+  const response = await api.put(`/api/stage-configurations/${stageName}`, data);
   return response.data;
 };
 
@@ -89,7 +89,7 @@ export const updateConfiguration = async (
 export const resetConfiguration = async (
   stageName: 'business_analyst' | 'developer' | 'reviewer'
 ) => {
-  const response = await api.post(`/stage-configurations/${stageName}/reset`);
+  const response = await api.post(`/api/stage-configurations/${stageName}/reset`);
   return response.data;
 };
 
@@ -99,7 +99,7 @@ export const resetConfiguration = async (
 export const getDefaults = async (
   stageName: 'business_analyst' | 'developer' | 'reviewer'
 ) => {
-  const response = await api.get(`/stage-configurations/${stageName}/defaults`);
+  const response = await api.get(`/api/stage-configurations/${stageName}/defaults`);
   return response.data;
 };
 
@@ -111,7 +111,7 @@ export const toggleValidation = async (
   enabled: boolean
 ) => {
   const response = await api.patch(
-    `/stage-configurations/${stageName}/toggle-validation`,
+    `/api/stage-configurations/${stageName}/toggle-validation`,
     null,
     { params: { enabled } }
   );
@@ -122,7 +122,7 @@ export const toggleValidation = async (
  * Get validation status summary for all stages
  */
 export const getValidationSummary = async () => {
-  const response = await api.get('/stage-configurations/validation-status/summary');
+  const response = await api.get('/api/stage-configurations/validation-status/summary');
   return response.data;
 };
 

@@ -71,48 +71,48 @@ export interface LLMConfigTestResponse {
 
 export const llmConfigService = {
   async getSupportedProviders(): Promise<LLMProviderInfo[]> {
-    const response = await axios.get('/llm-config/providers');
+    const response = await axios.get('/api/llm-config/providers');
     return response.data;
   },
 
   async getAllConfigs(): Promise<LLMConfig[]> {
-    const response = await axios.get('/llm-config/');
+    const response = await axios.get('/api/llm-config/');
     return response.data;
   },
 
   async getCurrentConfig(): Promise<LLMConfig> {
-    const response = await axios.get('/llm-config/current');
+    const response = await axios.get('/api/llm-config/current');
     return response.data;
   },
 
   async createConfig(data: LLMConfigCreate): Promise<LLMConfig> {
-    const response = await axios.post('/llm-config/', data);
+    const response = await axios.post('/api/llm-config/', data);
     return response.data;
   },
 
   async updateConfig(configId: number, data: LLMConfigUpdate): Promise<LLMConfig> {
-    const response = await axios.put(`/llm-config/${configId}`, data);
+    const response = await axios.put(`/api/llm-config/${configId}`, data);
     return response.data;
   },
 
   async activateConfig(configId: number): Promise<LLMConfig> {
-    const response = await axios.post(`/llm-config/${configId}/activate`);
+    const response = await axios.post(`/api/llm-config/${configId}/activate`);
     return response.data;
   },
 
   async deleteConfig(configId: number): Promise<void> {
-    await axios.delete(`/llm-config/${configId}`);
+    await axios.delete(`/api/llm-config/${configId}`);
   },
 
   async testConfig(testPrompt?: string): Promise<LLMConfigTestResponse> {
-    const response = await axios.post('/llm-config/test', {
+    const response = await axios.post('/api/llm-config/test', {
       test_prompt: testPrompt || "Hello, please respond with 'Configuration test successful!'"
     });
     return response.data;
   },
 
   async getConfigHistory(): Promise<LLMConfig[]> {
-    const response = await axios.get('/llm-config/history');
+    const response = await axios.get('/api/llm-config/history');
     return response.data;
   }
 };

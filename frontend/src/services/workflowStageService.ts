@@ -150,7 +150,7 @@ export interface StageReturnResponse {
  * Get current stage information for a workflow
  */
 export const getCurrentStage = async (workflowId: string): Promise<StageInfo> => {
-  const response = await api.get(`/workflows/${workflowId}/current-stage`);
+  const response = await api.get(`/api/workflows/${workflowId}/current-stage`);
   return response.data;
 };
 
@@ -162,7 +162,7 @@ export const getStageSteps = async (
   stageName: string
 ): Promise<WorkflowStep[]> => {
   const response = await api.get(
-    `/workflows/${workflowId}/stages/${stageName}/steps`
+    `/api/workflows/${workflowId}/stages/${stageName}/steps`
   );
   return response.data;
 };
@@ -175,7 +175,7 @@ export const getStageArtifacts = async (
   stageName: string
 ): Promise<StageArtifacts> => {
   const response = await api.get(
-    `/workflows/${workflowId}/stages/${stageName}/artifacts`
+    `/api/workflows/${workflowId}/stages/${stageName}/artifacts`
   );
   return response.data;
 };
@@ -188,7 +188,7 @@ export const submitStage = async (
   request: StageSubmitRequest
 ): Promise<StageSubmitResponse> => {
   const response = await api.post(
-    `/workflows/${workflowId}/stages/submit`,
+    `/api/workflows/${workflowId}/stages/submit`,
     request
   );
   return response.data;
@@ -202,7 +202,7 @@ export const returnStage = async (
   request: StageReturnRequest
 ): Promise<StageReturnResponse> => {
   const response = await api.post(
-    `/workflows/${workflowId}/stages/return`,
+    `/api/workflows/${workflowId}/stages/return`,
     request
   );
   return response.data;
@@ -216,7 +216,7 @@ export const validateStage = async (
   stageName: string
 ): Promise<ValidationResult> => {
   const response = await api.post(
-    `/workflows/${workflowId}/stages/${stageName}/validate`
+    `/api/workflows/${workflowId}/stages/${stageName}/validate`
   );
   return response.data;
 };
@@ -228,7 +228,7 @@ export const getStageTransitions = async (
   workflowId: string
 ): Promise<StageTransition[]> => {
   const response = await api.get(
-    `/workflows/${workflowId}/stage-transitions`
+    `/api/workflows/${workflowId}/stage-transitions`
   );
   return response.data;
 };
@@ -238,7 +238,7 @@ export const getStageTransitions = async (
  */
 export const getMyStageAssignments = async (stage?: string): Promise<any> => {
   const params = stage ? { stage } : {};
-  const response = await api.get(`/workflows/my-stage-assignments`, {
+  const response = await api.get(`/api/workflows/my-stage-assignments`, {
     params,
   });
   return response.data;

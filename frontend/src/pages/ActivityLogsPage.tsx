@@ -17,8 +17,8 @@ export const ActivityLogsPage = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await axios.get('/admin/logs', {
-        params: filter !== 'all' ? { action_type: filter } : {},
+      const response = await axios.get('/api/logs/audit', {
+        params: filter !== 'all' ? { event_category: filter } : {},
       });
       setLogs(response.data.logs || []);
     } catch (error) {
