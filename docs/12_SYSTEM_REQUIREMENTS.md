@@ -2,14 +2,16 @@
 
 ## Supported Local Environment
 - OS: Windows 10/11, Linux, or macOS
-- Container runtime: Podman or Docker with Compose support
+- Native mode: Python 3.11+ and Node.js/npm
+- Container mode: Podman or Docker with Compose support
 - Node.js: 18+
 - npm: 9+
 
 ## Runtime Services
 - Frontend: `localhost:3000`
 - API: `localhost:<API_PORT>` (`API_PORT` from `.env`)
-- Postgres: `localhost:5431` (default)
+- Native database: SQLite under `data/reg_reporting_local.db`
+- Container database: Postgres at `localhost:5431` (default)
 
 ## External Dependency
 - OpenAI-compatible LLM gateway configured by:
@@ -25,3 +27,4 @@
 - `data/artifacts/`
 - `data/synthetic/`
 - `data/exports/`
+- `data/chroma/`

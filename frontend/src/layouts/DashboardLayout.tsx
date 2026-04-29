@@ -48,6 +48,7 @@ import { useTheme } from '@mui/material/styles';
 import nttDataLogo from '@/components/assets/GlobalLogo_NTTDATA_FutureBlue_RGB.png';
 import logo from '@/components/assets/Logo.png';
 import api from '@/utils/axios';
+import { authService } from '@/services/authService';
 
 const drawerWidth = 240;
 const collapsedDrawerWidth = 80;
@@ -181,9 +182,15 @@ export const DashboardLayout = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleLogout = () => {
-    clearAuth();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.warn('Logout endpoint failed; clearing local session.', error);
+    } finally {
+      clearAuth();
+      navigate('/login');
+    }
   };
 
   const handleAccountMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

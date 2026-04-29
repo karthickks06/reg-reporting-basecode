@@ -27,12 +27,23 @@ The platform supports artifact ingestion, gap analysis, SQL generation, XML gene
 - `docs/`: Project documentation
 
 ## Local Startup
-Use the shared one-command path:
+Run without Docker or Podman, using your local Python and Node.js:
+```powershell
+.\start-native.ps1 -Install
+```
+
+After the first install, start it with:
+```powershell
+.\start-native.ps1
+```
+
+This starts the FastAPI backend, background worker, and Vite frontend. It uses SQLite at `data/reg_reporting_local.db` and embedded Chroma data under `data/chroma`.
+
+Use the container path only when you want the Compose stack:
 ```powershell
 Copy-Item .env.example .env
 .\start-local.ps1
 ```
-The canonical Compose definition is `compose.yaml`.
 
 Open:
 - UI: `http://localhost:3000`

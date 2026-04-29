@@ -5,6 +5,7 @@ from pathlib import Path
 
 from app.config import settings
 from app.db import SessionLocal
+from app.services.auth_bootstrap import ensure_auth_seed_data
 from app.services.runtime.probes import ensure_schema_tables, probe_database
 from app.services.runtime.schema_patches import run_schema_patches
 from app.services.runtime.state import STARTUP_STATE, build_troubleshooting_steps, push_startup_step, reset_startup_state, utc_now_iso
@@ -80,6 +81,22 @@ def run_startup_sequence(data_root: Path, artifact_root: Path) -> None:
         schema_patch_status.get("applied", []),
         schema_patch_status.get("skipped", []),
     )
+
+    try:
+        with SessionLocal() as db:
+            auth_seed = ensure_auth_seed_data(db)
+        push_startup_step(
+            "auth-bootstrap",
+            "ok",
+            f"Auth roles ready; bootstrap admin created={auth_seed.get('admin_created', False)}.",
+        )
+        logger.info("Startup step complete step=auth-bootstrap result=%s", auth_seed)
+    except Exception as exc:
+        push_startup_step("auth-bootstrap", "failed", f"Auth bootstrap failed: {exc}")
+        STARTUP_STATE["state"] = "failed"
+        STARTUP_STATE["completed_at"] = utc_now_iso()
+        STARTUP_STATE["errors"].append(f"Auth bootstrap failed: {exc}")
+        raise
 
     if settings.auto_backfill_rag_embeddings:
         backfill_count = 0

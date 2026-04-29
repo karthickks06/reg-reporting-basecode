@@ -1,5 +1,7 @@
 from pathlib import Path
 
-DATA_ROOT = Path("/data")
+from app.config import settings
+
+DATA_ROOT = Path(settings.data_root).expanduser().resolve()
 ARTIFACT_ROOT = DATA_ROOT / "artifacts"
 SYNTHETIC_ROOT = DATA_ROOT / "synthetic"

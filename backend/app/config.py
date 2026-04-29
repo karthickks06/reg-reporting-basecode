@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     environment: str = "local"
     api_port: int = 8000
+    data_root: str = "../data"
     database_url: str = "postgresql+psycopg://fca_user:fca_pass@postgres:5431/fca_app"
     auto_create_schema: bool = True
     auto_apply_schema_patches: bool = True
@@ -36,6 +37,15 @@ class Settings(BaseSettings):
     chroma_collection: str = "rag_chunks"
     admin_api_key: str = ""
     min_review_coverage_score: float = 80.0
+
+    # Authentication
+    auth_secret_key: str = "change-me-local-auth-secret"
+    auth_algorithm: str = "HS256"
+    auth_access_token_expire_minutes: int = 480
+    auth_bootstrap_enabled: bool = True
+    auth_bootstrap_username: str = "admin"
+    auth_bootstrap_email: str = "admin@example.com"
+    auth_bootstrap_password: str = "Admin123!"
 
 
 settings = Settings()

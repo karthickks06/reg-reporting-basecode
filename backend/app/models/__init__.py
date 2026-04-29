@@ -1,4 +1,5 @@
 from app.db import Base
+from app.models.auth import Role, User, UserActivityLog
 from app.models.core import (
     AdminAuditLog,
     AgentInstruction,
@@ -23,7 +24,10 @@ __all__ = [
     "GitHubIntegrationConfig",
     "JobQueue",
     "RagChunk",
+    "Role",
     "SystemAuditLog",
+    "User",
+    "UserActivityLog",
     "Workflow",
     "WorkflowActionLog",
     "WorkflowStageHistory",

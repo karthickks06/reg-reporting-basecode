@@ -17,14 +17,16 @@ def build_troubleshooting_steps(topic: str) -> list[str]:
     """Build troubleshooting guidance for the requested startup topic."""
     if topic == "database":
         return [
-            "Verify DATABASE_URL points to a reachable PostgreSQL instance.",
+            "Verify DATABASE_URL points to a reachable database. For native local mode, use sqlite:///../data/reg_reporting_local.db.",
             "If using local containers, run .\\start-local.ps1 or confirm the postgres container is healthy.",
+            "If running without containers, run .\\start-native.ps1 from the repository root.",
             "For AWS, verify the RDS security group and database name exist.",
         ]
     if topic == "chroma":
         return [
             "Confirm the Chroma service is running and reachable from the backend.",
             "Check CHROMA_HOST, CHROMA_PORT, and CHROMA_COLLECTION in the backend environment.",
+            "For native local mode, leave CHROMA_HOST empty so Chroma uses CHROMA_PERSIST_DIR.",
             "Check /ready for degraded mode details before inviting users.",
         ]
     if topic == "schema-patches":

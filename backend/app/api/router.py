@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from app.api.routes.auth_routes import router as auth_router
 from app.api.routes.admin_routes import router as admin_router
 from app.api.routes.artifact_routes import router as artifact_router
 from app.api.routes.ba_routes import router as ba_router
@@ -15,6 +16,8 @@ from app.api.routes.system_routes import router as system_router
 from app.api.routes.workflow_routes import router as workflow_router
 
 api_router = APIRouter()
+api_router.include_router(auth_router)
+api_router.include_router(auth_router, prefix="/api")
 api_router.include_router(system_router)
 api_router.include_router(rag_router)
 api_router.include_router(artifact_router)

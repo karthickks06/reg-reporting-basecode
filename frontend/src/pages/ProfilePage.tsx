@@ -153,7 +153,7 @@ export const ProfilePage = () => {
 
           <TextField
             label="Role"
-            value={user?.role || 'User'}
+            value={user?.role?.name || 'User'}
             disabled
             fullWidth
             helperText="Role is managed by administrators"
