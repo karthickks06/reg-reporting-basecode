@@ -17,8 +17,8 @@ The SSE (Server-Sent Events) connection errors were caused by **missing Azure Op
 
 ### 1. Missing Backend Environment File
 - **File**: `backend/.env` was missing
-- **Impact**: Backend container couldn't load Azure OpenAI credentials
-- **Symptom**: Container failed to start with Pydantic validation errors
+- **Impact**: Backend process couldn't load Azure OpenAI credentials
+- **Symptom**: Backend failed to start with Pydantic validation errors
 
 ### 2. Pydantic Settings Validation Failure
 ```python
@@ -102,9 +102,9 @@ This specific error occurs when:
 
 1. **Server Crashes Mid-Stream**: The backend starts sending SSE data but crashes before completing the response
 2. **Premature Connection Close**: Server closes the connection without properly ending the chunked transfer
-3. **Backend Not Running**: Container exits before establishing SSE connection
+3. **Backend Not Running**: Process exits before establishing SSE connection
 
-In this case, the backend container was **failing to start** due to configuration errors, causing immediate connection failures.
+In this case, the backend was **failing to start** due to configuration errors, causing immediate connection failures.
 
 ## SSE Connection Flow
 
@@ -145,8 +145,8 @@ class Settings(BaseSettings):
 
 ### 3. Restarted Backend ✅
 ```bash
-.\stop-local.ps1
-.\start-local.ps1
+cd backend
+../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Verification
@@ -208,11 +208,8 @@ curl -N http://localhost:8000/api/jobs/stream/BA?project_id=demo-local
 ```
 Expected: Long-lived connection that streams job updates
 
-### 3. Check Container Logs
-```bash
-podman logs fca-api
-# Should show SSE connections without errors
-```
+### 3. Check API Logs
+Review the API terminal output. It should show SSE connections without errors.
 
 ## Result
 
@@ -228,7 +225,7 @@ podman logs fca-api
 To prevent this error in the future:
 
 1. **Always create backend/.env** from .env.example before first run
-2. **Check container logs** if SSE connections fail: `podman logs fca-api`
+2. **Check API logs** if SSE connections fail
 3. **Verify health endpoint** before testing SSE: `curl http://localhost:8000/health`
 4. **Monitor backend startup** to ensure no configuration errors
 
@@ -237,6 +234,6 @@ To prevent this error in the future:
 The SSE connection error was a **symptom**, not the root cause. The actual issue was:
 - Missing environment configuration (`.env` file)
 - Pydantic validation rejecting environment variables
-- Backend container failing to start
+- Backend process failing to start
 
 Once the backend was properly configured and started, SSE connections worked flawlessly.

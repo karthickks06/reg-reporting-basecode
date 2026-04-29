@@ -4,94 +4,62 @@
 Run the local stack for development and testing: frontend, backend API, worker, and persistence.
 
 ## Runtime Assumptions
-- Native mode: Python 3.11+ and Node.js/npm on PATH
-- Container mode: Podman or Docker with compose support (and daemon/machine running)
+- Python 3.11+ and Node.js/npm on PATH
 - Node.js 18+ and npm 9+
 - Free ports for frontend (`3000`) and API (`8000`)
 
-## Standard Local Boot Without Containers
-```powershell
-.\start-native.ps1 -Install
+## Install Dependencies
+```sh
+python -m venv .venv
+.venv/Scripts/python -m pip install -r backend/requirements.txt
+cd frontend && npm install
 ```
 
-After dependencies are installed:
-```powershell
-.\start-native.ps1
+Copy `backend/.env.native.example` to `backend/.env` and update LLM credentials when needed.
+
+## Start Services
+Run each process in a separate terminal:
+
+```sh
+cd backend && ../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-What the script does:
-- creates `.venv` using your local Python
-- installs backend dependencies when needed
-- installs frontend dependencies when needed
-- creates `backend/.env` from `backend/.env.native.example`
-- starts API, worker, and Vite frontend as local processes
-- stores local SQLite and Chroma data under `data/`
-- writes process IDs under `.local-pids/` and logs under `.local-logs/`
-
-Stop native processes:
-```powershell
-.\stop-native.ps1
+```sh
+cd backend && ../.venv/Scripts/python start_worker.py
 ```
 
-## Container Boot
-```powershell
-Copy-Item .env.example .env
-.\start-local.ps1
+```sh
+cd frontend && npm run dev
 ```
 
-What the script does:
-- starts `postgres`
-- creates the target local database if it is missing in the compose Postgres container
-- starts `api`, `worker`, and `frontend`
-- waits for API and frontend readiness before reporting success
+Local runtime data is stored under `data/`.
 
 Verify readiness:
-```powershell
-curl.exe -sS http://localhost:<API_PORT>/ready
-```
-
-## Developer Split Mode With Containers
-Use this when you want frontend hot reload instead of the containerized frontend:
-```powershell
-Copy-Item .env.example .env
-docker compose -f compose.yaml up -d postgres api worker
-cd frontend
-Copy-Item .env.example .env.local
-npm install
-npm run dev
+```sh
+curl http://localhost:8000/ready
 ```
 
 Open:
 - Frontend: `http://localhost:3000`
-- API readiness: `http://localhost:<API_PORT>/ready`
+- API readiness: `http://localhost:8000/ready`
 
 ## Required Environment Values
-- `DATABASE_URL` for backend persistence. Native mode defaults to `sqlite:///../data/reg_reporting_local.db`.
+- `DATABASE_URL` for backend persistence. Local mode defaults to `sqlite:///../data/reg_reporting_local.db`.
 - `AXET_LLM_URL` for the LLM gateway
 - `AXET_LLM_MODEL` for default model routing
-- `VITE_API_URL` in `frontend/.env.local` pointing to `http://localhost:<API_PORT>/api`
+- `VITE_API_URL` in `frontend/.env.local` pointing to `http://localhost:8000/api`
 
 ## Operational Commands
-```powershell
-.\start-local.ps1
-.\stop-local.ps1
-.\start-native.ps1
-.\stop-native.ps1
-docker compose -f compose.yaml down
-docker compose -f compose.yaml ps
-docker compose -f compose.yaml logs --tail=200
-docker compose -f compose.yaml logs api --tail=200
-docker compose -f compose.yaml logs frontend --tail=200
-```
+- API: `cd backend && ../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+- Worker: `cd backend && ../.venv/Scripts/python start_worker.py`
+- Frontend: `cd frontend && npm run dev`
 
 ## Notes for Daily Development
-- `start-native.ps1` is the shared one-command path when you do not want Docker or Podman.
-- `start-local.ps1` remains available for the Compose stack.
-- Frontend can still run separately with `npm run dev` when you want hot reload during development.
-- Keep `API_PORT` and `VITE_API_URL` aligned if you use split mode.
+- Frontend runs with hot reload through `npm run dev`.
+- Keep `API_PORT` and `VITE_API_URL` aligned.
 
 ## Typical Failure Points
-- Port collisions: change `.env` values and restart compose.
+- Port collisions: change `.env` values and restart the affected local process.
 - LLM connectivity failures: verify `AXET_LLM_URL`, network access, and SSL settings.
 - Missing data in workflow steps: confirm the required artifact types were uploaded to the same `project_id`.
 - For step-by-step recovery, use [19 Startup Troubleshooting](./19_STARTUP_TROUBLESHOOTING.md).

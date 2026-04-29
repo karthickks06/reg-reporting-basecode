@@ -18,8 +18,7 @@ def build_troubleshooting_steps(topic: str) -> list[str]:
     if topic == "database":
         return [
             "Verify DATABASE_URL points to a reachable database. For native local mode, use sqlite:///../data/reg_reporting_local.db.",
-            "If using local containers, run .\\start-local.ps1 or confirm the postgres container is healthy.",
-            "If running without containers, run .\\start-native.ps1 from the repository root.",
+            "For local development, copy backend/.env.native.example to backend/.env and start the API with uvicorn.",
             "For AWS, verify the RDS security group and database name exist.",
         ]
     if topic == "chroma":
@@ -38,7 +37,7 @@ def build_troubleshooting_steps(topic: str) -> list[str]:
     if topic == "llm":
         return [
             "Verify AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY are set in backend/.env",
-            "Confirm the Azure OpenAI endpoint is reachable from the host or container network.",
+            "Confirm the Azure OpenAI endpoint is reachable from the host network.",
             "Verify the Azure OpenAI deployment name matches your Azure configuration.",
             "The API can remain usable in degraded mode while the LLM endpoint is offline.",
         ]

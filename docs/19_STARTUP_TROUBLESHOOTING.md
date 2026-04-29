@@ -1,25 +1,25 @@
 # Startup Troubleshooting
 
 ## Recommended Entry Points
-- Start everything locally with `.\start-local.ps1`
-- Stop the local stack with `.\stop-local.ps1`
+- Start the API, worker, and frontend as separate local processes.
+- Stop the local stack by stopping those terminal sessions.
 - Check API readiness with `http://localhost:8000/ready`
 
 ## If Startup Stops Early
-1. Run `docker compose -f compose.yaml ps` (or the same with `podman compose`).
-2. Confirm `fca-postgres`, `fca-api`, `fca-worker`, and `fca-frontend` are running or healthy.
-3. Open `http://localhost:8000/ready` and inspect the dependency payload.
+1. Confirm the API, worker, and frontend terminals are still running.
+2. Open `http://localhost:8000/ready` and inspect the dependency payload.
+3. Review the terminal output for the first failing process.
 
 ## Common Failure Cases
 
 ### Database Connection Failed
 Symptoms:
-- API container does not become healthy
+- API does not become ready
 - `/ready` reports database failure
 
 Actions:
-1. Verify `DATABASE_URL` in `.env`
-2. Confirm the Postgres container is healthy
+1. Verify `DATABASE_URL` in `backend/.env`
+2. Confirm the configured database is reachable
 3. If using AWS, verify the RDS endpoint, security group, and target database name
 
 ### pgvector Is Missing
@@ -39,26 +39,23 @@ Symptoms:
 
 Actions:
 1. Verify `AXET_LLM_URL`
-2. Confirm network access from the host or container
+2. Confirm network access from the host
 3. Check TLS behavior with `AXET_LLM_VERIFY_SSL`
 
 ### Frontend Did Not Start
 Symptoms:
 - `http://localhost:3000` does not load
-- compose shows `fca-frontend` restarting or unhealthy
+- the frontend dev server exits or fails to compile
 
 Actions:
-1. Review `docker compose -f compose.yaml logs frontend --tail=200`
+1. Review the `npm run dev` terminal output
 2. Confirm the API is healthy first
-3. Rebuild with `docker compose -f compose.yaml up -d --build frontend`
+3. Reinstall frontend dependencies with `npm install` if dependency resolution changed
 
 ## Useful Commands
-```powershell
-.\start-local.ps1
-.\stop-local.ps1
-docker compose -f compose.yaml ps
-docker compose -f compose.yaml logs --tail=200
-docker compose -f compose.yaml logs api --tail=200
-docker compose -f compose.yaml logs frontend --tail=200
-curl.exe -sS http://localhost:8000/ready
+```sh
+cd backend && ../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+cd backend && ../.venv/Scripts/python start_worker.py
+cd frontend && npm run dev
+curl http://localhost:8000/ready
 ```

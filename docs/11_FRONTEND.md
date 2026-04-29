@@ -4,8 +4,7 @@
 This document describes the active frontend structure and runtime expectations. Detailed startup steps live in the local runbook.
 
 ## Runtime Modes
-- Standard local stack: use `.\start-local.ps1` from the repo root.
-- Developer split mode: run the frontend locally with `npm run dev`.
+- Local frontend mode: run `npm run dev` from `frontend/`.
 
 ## Integration Contract
 - `NEXT_PUBLIC_API_BASE` must point to the backend host URL.

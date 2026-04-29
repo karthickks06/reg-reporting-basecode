@@ -22,15 +22,11 @@ This is written for a demo operator, not for a backend developer.
 
 Recommended check:
 
-```powershell
-curl.exe -sS http://localhost:8000/ready
+```sh
+curl http://localhost:8000/ready
 ```
 
-If the local stack is not running:
-
-```powershell
-.\start-local.ps1
-```
+If the local stack is not running, start the API, worker, and frontend with the commands in [01 Local Setup Runbook](./01_LOCAL_SETUP_RUNBOOK.md).
 
 ## Demo Inputs To Have Ready
 For the cleanest end-to-end run, prepare these artifact types before the demo:

@@ -17,11 +17,6 @@ The backend checks agent status through `/health` endpoint which probes Azure Op
 ```bash
 # Check if backend service is running
 sudo systemctl status fca-api
-
-# Or if using Docker/Podman
-sudo docker ps | grep fca-api
-# OR
-sudo podman ps | grep fca-api
 ```
 
 ### Step 2: Check Health Endpoint
@@ -42,12 +37,6 @@ curl -sS http://localhost:8000/ready | jq '.'
 ```bash
 # If using systemd
 sudo journalctl -u fca-api -n 100 --no-pager
-
-# If using Docker
-sudo docker logs fca-api --tail=200
-
-# If using Podman
-sudo podman logs fca-api --tail=200
 ```
 
 ---
@@ -85,11 +74,6 @@ sudo nano /path/to/your/.env
 
 # Restart the backend service
 sudo systemctl restart fca-api
-
-# OR if using Docker/Podman
-sudo docker restart fca-api
-# OR
-sudo podman restart fca-api
 ```
 
 ### Issue 2: Network Connectivity to Azure OpenAI

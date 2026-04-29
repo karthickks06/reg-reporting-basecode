@@ -37,38 +37,24 @@ AZURE_OPENAI_API_VERSION=2024-12-01-preview
 
 **Replace `your_actual_api_key_here` with your actual Azure OpenAI API key.**
 
-### Step 2: Rebuild and Restart Containers
+### Step 2: Install Dependencies and Restart Services
 
-The container needs to be rebuilt to install the new `openai` package:
+Install the Python dependencies, then restart the API and worker processes:
 
-```powershell
-# Stop current containers
-podman-compose down
-
-# Rebuild the API container with new dependencies
-podman-compose build fca-api
-
-# Start all containers
-podman-compose up -d
-
-# Verify API started successfully
-podman logs fca-api
+```sh
+cd backend
+../.venv/Scripts/python -m pip install -r requirements.txt
+../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Or use the provided scripts:
-
-```powershell
-.\stop-local.ps1
-podman-compose build fca-api
-.\start-local.ps1
-```
+Start the worker in a separate terminal with `cd backend && ../.venv/Scripts/python start_worker.py`.
 
 ### Step 3: Verify Azure OpenAI is Being Used
 
 Check the API logs to confirm Azure OpenAI is being used:
 
-```powershell
-podman logs -f fca-api
+```sh
+curl http://localhost:8000/ready
 ```
 
 You should see log messages like:
@@ -190,10 +176,10 @@ If Azure OpenAI is unavailable or credentials are invalid, the application will:
 ## Troubleshooting
 
 ### Error: "openai module not found"
-**Solution**: Rebuild the container to install dependencies:
-```powershell
-podman-compose build fca-api
-podman-compose up -d
+**Solution**: Reinstall backend dependencies:
+```sh
+cd backend
+../.venv/Scripts/python -m pip install -r requirements.txt
 ```
 
 ### Error: "Azure OpenAI authentication failed"
@@ -203,10 +189,7 @@ podman-compose up -d
 **Solution**: Ensure both `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_API_KEY` are set in `backend/.env`.
 
 ### Check Azure OpenAI is being used
-**Solution**: Look at the logs for confirmation:
-```powershell
-podman logs fca-api | Select-String "Using Azure OpenAI GPT-4.1"
-```
+**Solution**: Look at the API terminal logs for `Using Azure OpenAI GPT-4.1`.
 
 ### Health check shows LLM not configured
 **Solution**: Verify all Azure OpenAI environment variables are set correctly in `backend/.env`.

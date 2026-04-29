@@ -27,23 +27,21 @@ The platform supports artifact ingestion, gap analysis, SQL generation, XML gene
 - `docs/`: Project documentation
 
 ## Local Startup
-Run without Docker or Podman, using your local Python and Node.js:
-```powershell
-.\start-native.ps1 -Install
+Run locally with Python and Node.js:
+```sh
+python -m venv .venv
+.venv/Scripts/python -m pip install -r backend/requirements.txt
+cd frontend && npm install
 ```
 
-After the first install, start it with:
-```powershell
-.\start-native.ps1
+Copy `backend/.env.native.example` to `backend/.env`, then start the services in separate terminals:
+```sh
+cd backend && ../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+cd backend && ../.venv/Scripts/python start_worker.py
+cd frontend && npm run dev
 ```
 
 This starts the FastAPI backend, background worker, and Vite frontend. It uses SQLite at `data/reg_reporting_local.db` and embedded Chroma data under `data/chroma`.
-
-Use the container path only when you want the Compose stack:
-```powershell
-Copy-Item .env.example .env
-.\start-local.ps1
-```
 
 Open:
 - UI: `http://localhost:3000`

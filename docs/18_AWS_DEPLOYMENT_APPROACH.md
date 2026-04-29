@@ -16,14 +16,12 @@ Use a small Linux-based AWS footprint for the shared environment:
 This project should not be exposed publicly in its current shape because the UI is still local-style and no-auth.
 
 ## Why This Is The Best Fit For This Repo
-- The current backend container image is Linux-based and uses a bash entrypoint.
 - The local runtime is already centered around PostgreSQL with `pgvector`, FastAPI, and a file-backed artifact store.
 - The current runtime does not depend on Redis, so the internal feedback environment does not need to carry an extra cache or queue service.
 - The current async job flow runs in-process through FastAPI background tasks, so the first production-like environment does not need a separate queue platform.
 
 ## Why Not Windows EC2 As The Primary Plan
 Windows EC2 is the wrong default for this repository:
-- the current container path is Linux-oriented, not Windows-oriented
 - operating the backend and frontend as native Windows services is possible, but it adds friction without giving this project any clear benefit
 - if a Windows host is mandated by platform policy, use it only as a fallback option and keep PostgreSQL on RDS
 
@@ -69,8 +67,7 @@ The application currently stores uploaded and generated artifacts under `data/ar
 ## Operational Notes
 - `/health` now reports startup state, database health, LLM availability, schema completeness, and `pgvector` status.
 - The frontend now retries backend health checks and shows a clearer message when the API is down or degraded.
-- Local compose now includes frontend and API health checks plus dependency ordering.
-- local-only database bootstrap is handled by `start-local.ps1`; the shared AWS environment should not rely on app-driven database creation
+- The shared AWS environment should not rely on app-driven database creation; provision the database explicitly.
 
 ## Known Follow-Up Gaps
 These are still important before broader rollout:

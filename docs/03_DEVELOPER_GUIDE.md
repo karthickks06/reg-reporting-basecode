@@ -8,7 +8,6 @@ Use this guide to find the right module quickly. For detailed use-case flow diag
 - `frontend/`: Next.js workbench UI, admin, analytics
 - `data/`: uploaded and generated runtime artifacts
 - `docs/`: setup, architecture, API, and developer reference material
-- `compose.yaml`: local multi-service runtime
 
 ## Backend Ownership
 - `backend/app/main.py`: app wiring and router registration
@@ -29,5 +28,5 @@ Use this guide to find the right module quickly. For detailed use-case flow diag
 ## Current Runtime Rules
 - Workflow stages remain `BA -> DEV -> REVIEWER -> COMPLETED`.
 - Background jobs are database-backed through `job_queue`; Redis is not part of the active runtime.
-- Files are stored under `data/artifacts`, while metadata and run state stay in PostgreSQL.
+- Files are stored under `data/artifacts`, while metadata and run state stay in the configured database.
 - LLM calls must remain wrapped in deterministic validation before stage output is accepted.

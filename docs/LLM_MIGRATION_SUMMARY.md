@@ -102,20 +102,17 @@ For existing deployments, follow these steps:
   - AXET_LLM_MODEL
   - AXET_LLM_VERIFY_SSL
 
-- [ ] Rebuild backend container:
-  ```powershell
-  podman-compose build fca-api
+- [ ] Reinstall backend dependencies:
+  ```sh
+  cd backend
+  ../.venv/Scripts/python -m pip install -r requirements.txt
   ```
 
 - [ ] Restart services:
-  ```powershell
-  podman-compose up -d
-  ```
+  Start the API, worker, and frontend with the commands in `docs/01_LOCAL_SETUP_RUNBOOK.md`.
 
 - [ ] Verify Azure OpenAI is working:
-  ```powershell
-  podman logs fca-api | Select-String "Using Azure OpenAI GPT-4.1"
-  ```
+  Check the API terminal logs for `Using Azure OpenAI GPT-4.1`.
 
 - [ ] Test LLM functionality with a gap analysis or SQL generation workflow
 
@@ -178,7 +175,7 @@ However, it's recommended to fix Azure OpenAI configuration issues rather than r
 
 For issues:
 
-1. Check logs: `podman logs fca-api`
+1. Check the API terminal logs
 2. Verify Azure credentials in Azure Portal
 3. Review health check: `http://localhost:8000/ready`
 4. Consult AZURE_OPENAI_SETUP.md for detailed troubleshooting
