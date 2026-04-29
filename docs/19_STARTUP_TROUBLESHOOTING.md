@@ -1,12 +1,13 @@
 # Startup Troubleshooting
 
 ## Recommended Entry Points
-- Start the API, worker, and frontend as separate local processes.
+- Start the backend with `backend/app.py`; it launches the API and worker together.
+- Start the frontend with `npm run dev`.
 - Stop the local stack by stopping those terminal sessions.
 - Check API readiness with `http://localhost:8000/ready`
 
 ## If Startup Stops Early
-1. Confirm the API, worker, and frontend terminals are still running.
+1. Confirm the backend and frontend terminals are still running.
 2. Open `http://localhost:8000/ready` and inspect the dependency payload.
 3. Review the terminal output for the first failing process.
 
@@ -38,9 +39,9 @@ Symptoms:
 - `/ready` reports `llm.ok=false`
 
 Actions:
-1. Verify `AXET_LLM_URL`
+1. Verify `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_API_KEY`
 2. Confirm network access from the host
-3. Check TLS behavior with `AXET_LLM_VERIFY_SSL`
+3. Confirm the deployment name in `AZURE_OPENAI_DEPLOYMENT`
 
 ### Frontend Did Not Start
 Symptoms:
@@ -54,8 +55,7 @@ Actions:
 
 ## Useful Commands
 ```sh
-cd backend && ../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-cd backend && ../.venv/Scripts/python start_worker.py
+cd backend && ../.venv/Scripts/python app.py
 cd frontend && npm run dev
 curl http://localhost:8000/ready
 ```

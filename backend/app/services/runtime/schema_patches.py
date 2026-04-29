@@ -137,9 +137,15 @@ def _patch_incremental_workflow_columns(conn: Connection) -> None:
     _add_column_if_missing(conn, "artifacts", "is_deleted", "BOOLEAN NOT NULL DEFAULT false")
     _add_column_if_missing(conn, "artifacts", "deleted_at", "TIMESTAMP WITH TIME ZONE")
     _add_column_if_missing(conn, "artifacts", "deleted_by", "VARCHAR(120)")
+    _add_column_if_missing(conn, "workflows", "workflow_type", "VARCHAR(80)")
+    _add_column_if_missing(conn, "workflows", "description", "TEXT")
+    _add_column_if_missing(conn, "workflows", "version", "VARCHAR(80)")
+    _add_column_if_missing(conn, "workflows", "stage_status", "VARCHAR(40)")
     _add_column_if_missing(conn, "workflows", "latest_report_xml_artifact_id", "INTEGER")
     _add_column_if_missing(conn, "workflows", "ba_gap_waivers_json", json_type)
     _add_column_if_missing(conn, "workflow_stage_history", "details_json", json_type)
+    if _table_exists(conn, "workflows") and _column_exists(conn, "workflows", "stage_status"):
+        _run(conn, "UPDATE workflows SET stage_status = status WHERE stage_status IS NULL")
 
 
 def _patch_artifact_display_name(conn: Connection) -> None:

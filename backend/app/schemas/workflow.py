@@ -29,8 +29,13 @@ class WorkflowResponse(BaseModel):
     project_id: str
     name: str
     psd_version: str | None = None
+    workflow_type: str | None = None
+    workflow_name: str | None = None
+    description: str | None = None
+    version: str | None = None
     current_stage: str
     status: str
+    stage_status: str | None = None
     assigned_ba: str | None = None
     assigned_dev: str | None = None
     assigned_reviewer: str | None = None

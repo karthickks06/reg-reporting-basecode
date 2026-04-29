@@ -134,6 +134,15 @@ export interface Workflow {
   developer_stage_completed_at?: string | null;
   reviewer_stage_completed_at?: string | null;
   current_step_index?: number;
+  steps_completed?: number;
+  total_steps?: number;
+  stage_progress?: {
+    steps_completed: number;
+    total_steps: number;
+    completion_percentage: number;
+    completed?: number;
+    total?: number;
+  };
   is_submitted?: boolean;
 }
 

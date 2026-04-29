@@ -36,12 +36,11 @@ cd frontend && npm install
 
 Copy `backend/.env.native.example` to `backend/.env`, then start the services in separate terminals:
 ```sh
-cd backend && ../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-cd backend && ../.venv/Scripts/python start_worker.py
+cd backend && ../.venv/Scripts/python app.py
 cd frontend && npm run dev
 ```
 
-This starts the FastAPI backend, background worker, and Vite frontend. It uses SQLite at `data/reg_reporting_local.db` and embedded Chroma data under `data/chroma`.
+This starts the FastAPI backend, background worker, and Vite frontend. `backend/app.py` starts both backend-side processes, so a separate worker terminal is no longer required. It uses SQLite at `data/reg_reporting_local.db` and embedded Chroma data under `data/chroma`.
 
 Open:
 - UI: `http://localhost:3000`

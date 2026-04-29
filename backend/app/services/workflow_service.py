@@ -56,9 +56,14 @@ def serialize_workflow(workflow: Workflow, persona: str | None = None) -> dict:
         "display_id": workflow_display_id(workflow),
         "project_id": workflow.project_id,
         "name": workflow.name,
+        "workflow_name": workflow.name,
+        "workflow_type": getattr(workflow, "workflow_type", None) or "Complete",
+        "description": getattr(workflow, "description", None),
+        "version": getattr(workflow, "version", None) or workflow.psd_version or "1.0",
         "psd_version": workflow.psd_version,
         "current_stage": workflow.current_stage,
         "status": workflow.status,
+        "stage_status": getattr(workflow, "stage_status", None) or ("completed" if workflow.status == "completed" else "in_progress"),
         "assigned_ba": workflow.assigned_ba,
         "assigned_dev": workflow.assigned_dev,
         "assigned_reviewer": workflow.assigned_reviewer,
@@ -121,9 +126,11 @@ def submit_workflow_stage(
     workflow.current_stage = next_stage
     if next_stage == "COMPLETED":
         workflow.status = "completed"
+        workflow.stage_status = "completed"
         workflow.is_active = False
         workflow.current_assignee = None
     else:
+        workflow.stage_status = "in_progress"
         workflow.current_assignee = workflow_assignee(workflow, next_stage)
 
     db.add(
@@ -192,6 +199,7 @@ def send_back_workflow_stage(
         raise HTTPException(status_code=422, detail="send_back_reason_detail_too_short")
 
     workflow.current_stage = target
+    workflow.stage_status = "in_progress"
     workflow.current_assignee = workflow_assignee(workflow, target)
     detail_payload = {
         "reason_code": reason_code_value,

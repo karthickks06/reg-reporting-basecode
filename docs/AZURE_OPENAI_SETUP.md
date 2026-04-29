@@ -39,15 +39,15 @@ AZURE_OPENAI_API_VERSION=2024-12-01-preview
 
 ### Step 2: Install Dependencies and Restart Services
 
-Install the Python dependencies, then restart the API and worker processes:
+Install the Python dependencies, then restart the backend:
 
 ```sh
 cd backend
 ../.venv/Scripts/python -m pip install -r requirements.txt
-../.venv/Scripts/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+../.venv/Scripts/python app.py
 ```
 
-Start the worker in a separate terminal with `cd backend && ../.venv/Scripts/python start_worker.py`.
+The backend launcher starts the API and worker together.
 
 ### Step 3: Verify Azure OpenAI is Being Used
 

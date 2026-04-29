@@ -18,7 +18,7 @@ def build_troubleshooting_steps(topic: str) -> list[str]:
     if topic == "database":
         return [
             "Verify DATABASE_URL points to a reachable database. For native local mode, use sqlite:///../data/reg_reporting_local.db.",
-            "For local development, copy backend/.env.native.example to backend/.env and start the API with uvicorn.",
+            "For local development, copy backend/.env.native.example to backend/.env and start the backend with python app.py.",
             "For AWS, verify the RDS security group and database name exist.",
         ]
     if topic == "chroma":

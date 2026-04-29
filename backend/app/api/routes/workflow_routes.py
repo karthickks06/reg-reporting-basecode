@@ -39,6 +39,9 @@ class WorkflowCreateRequest(BaseModel):
     project_id: str
     name: str
     psd_version: str | None = None
+    workflow_type: str | None = None
+    description: str | None = None
+    version: str | None = None
     actor: str = "ba.user"
     assigned_ba: str = "ba.user"
     assigned_dev: str = "dev.user"
@@ -87,8 +90,12 @@ def create_workflow(req: WorkflowCreateRequest, db: Session = Depends(get_db)):
         project_id=req.project_id,
         name=req.name.strip() or f"workflow-{uuid4()}",
         psd_version=(req.psd_version or "").strip() or None,
+        workflow_type=(req.workflow_type or "Complete").strip() or "Complete",
+        description=(req.description or "").strip() or None,
+        version=(req.version or req.psd_version or "1.0").strip() or "1.0",
         current_stage="BA",
         status="in_progress",
+        stage_status="in_progress",
         assigned_ba=req.assigned_ba,
         assigned_dev=req.assigned_dev,
         assigned_reviewer=req.assigned_reviewer,
@@ -157,8 +164,12 @@ def create_workflow_version(workflow_id: int, req: WorkflowCreateVersionRequest,
         project_id=source.project_id,
         name=next_name,
         psd_version=next_psd_version,
+        workflow_type=source.workflow_type,
+        description=source.description,
+        version=source.version or next_psd_version or "1.0",
         current_stage="BA",
         status="in_progress",
+        stage_status="in_progress",
         assigned_ba=source.assigned_ba,
         assigned_dev=source.assigned_dev,
         assigned_reviewer=source.assigned_reviewer,

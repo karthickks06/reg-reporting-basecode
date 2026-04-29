@@ -1,10 +1,12 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class GapAnalysisRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     project_id: str
-    fca_artifact_id: int
-    data_model_artifact_id: int
+    fca_artifact_id: int | None = None
+    data_model_artifact_id: int | None = None
     model: str | None = None
     dataset_family: str | None = None
     allow_fallback: bool = False
@@ -15,6 +17,8 @@ class GapAnalysisRequest(BaseModel):
 
 
 class GapRemediationRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     project_id: str
     base_gap_run_id: int
     workflow_id: int | None = None
@@ -28,9 +32,11 @@ class GapRemediationRequest(BaseModel):
 
 
 class SqlGenerateRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     project_id: str
-    gap_run_id: int
-    data_model_artifact_id: int
+    gap_run_id: int | None = None
+    data_model_artifact_id: int | None = None
     extra_requirements_artifact_id: int | None = None
     model: str | None = None
     user_context: str | None = None
@@ -38,9 +44,11 @@ class SqlGenerateRequest(BaseModel):
 
 
 class XmlGenerateRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     project_id: str
-    data_artifact_id: int
-    xsd_artifact_id: int
+    data_artifact_id: int | None = None
+    xsd_artifact_id: int | None = None
     fca_artifact_id: int | None = None
     functional_spec_artifact_id: int | None = None
     model: str | None = None
@@ -49,9 +57,11 @@ class XmlGenerateRequest(BaseModel):
 
 
 class XmlValidateRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     project_id: str
-    report_xml_artifact_id: int
-    xsd_artifact_id: int
+    report_xml_artifact_id: int | None = None
+    xsd_artifact_id: int | None = None
     fca_artifact_id: int | None = None
     data_artifact_id: int | None = None
     data_model_artifact_id: int | None = None

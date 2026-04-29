@@ -26,7 +26,7 @@ Recommended check:
 curl http://localhost:8000/ready
 ```
 
-If the local stack is not running, start the API, worker, and frontend with the commands in [01 Local Setup Runbook](./01_LOCAL_SETUP_RUNBOOK.md).
+If the local stack is not running, start the backend and frontend with the commands in [01 Local Setup Runbook](./01_LOCAL_SETUP_RUNBOOK.md). The backend launcher starts both the API and worker.
 
 ## Demo Inputs To Have Ready
 For the cleanest end-to-end run, prepare these artifact types before the demo:

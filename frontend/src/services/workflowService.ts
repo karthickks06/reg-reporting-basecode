@@ -3,6 +3,28 @@ import { Workflow } from '@/types';
 
 const PROJECT_ID = import.meta.env.VITE_PROJECT_ID || 'local-workspace';
 
+const normalizeStage = (stage?: string): string | undefined => {
+  const value = String(stage || '').trim().toLowerCase();
+  const stageMap: Record<string, string> = {
+    ba: 'business_analyst',
+    business_analyst: 'business_analyst',
+    dev: 'developer',
+    developer: 'developer',
+    reviewer: 'reviewer',
+    analyst: 'reviewer',
+    completed: 'reviewer',
+    complete: 'reviewer',
+  };
+  return stageMap[value] || stage || undefined;
+};
+
+const normalizeStageStatus = (workflow: any): string => {
+  if (workflow.stage_status) return workflow.stage_status;
+  if (workflow.status === 'completed') return 'completed';
+  if (workflow.status === 'cancelled') return 'cancelled';
+  return 'in_progress';
+};
+
 const normalizeWorkflow = (workflow: any): Workflow => ({
   ...workflow,
   id: String(workflow.id),
@@ -11,6 +33,10 @@ const normalizeWorkflow = (workflow: any): Workflow => ({
   workflow_type: workflow.workflow_type || 'Complete',
   created_by: workflow.created_by || workflow.started_by || 'user',
   version: workflow.version || workflow.psd_version || '1.0',
+  current_stage: normalizeStage(workflow.current_stage),
+  stage_status: normalizeStageStatus(workflow),
+  steps_completed: workflow.steps_completed || workflow.stage_progress?.steps_completed || workflow.current_step_index || 0,
+  total_steps: workflow.total_steps || workflow.stage_progress?.total_steps || 0,
 });
 
 /**
@@ -33,7 +59,15 @@ export const workflowService = {
 
   getById: async (id: string | number): Promise<Workflow> => {
     const response = await api.get<{ workflow: Workflow }>(`/v1/workflows/${id}`);
-    return normalizeWorkflow(response.data.workflow || response.data);
+    const detail: any = response.data;
+    const workflow = normalizeWorkflow(detail.workflow || detail);
+    if (detail.history && Array.isArray(detail.history)) {
+      workflow.history = detail.history.map((item: any) => ({
+        ...item,
+        details: item.details || item.details_json || {},
+      }));
+    }
+    return workflow;
   },
 
   delete: async (id: string | number): Promise<void> => {
